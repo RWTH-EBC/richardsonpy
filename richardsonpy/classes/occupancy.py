@@ -10,11 +10,12 @@ import os
 import numpy as np
 import random
 
-import pycity.functions.occupancy_model as occupancy_model
+import richardsonpy.functions.occupancy_model as occupancy_model
 
 
 class Occupancy(object):
     """
+    Occupancy class of richardsonpy
     """
 
     # Define class variables for transition_probability_matrixes and initial 
@@ -26,22 +27,27 @@ class Occupancy(object):
 
     type_weekday = ["wd", "we"]  # weekday, weekend
 
-    def __init__(self, environment, number_occupants, initial_day=1,
+    def __init__(self, number_occupants, initial_day=1,
                  do_profile=True):
         """
         This class loads all input data before 
         
         Parameters
         ----------
-        number_occupants : integer
-            How many active occupants live in this apartment?
-        initial_day : integer, optional
+        number_occupants : int
+            Maximum number of occupants within apartment (range from 1 to 5)
+        initial_day : int, optional
             Initial day. 1-5 correspond to Monday-Friday, 6-7 to Saturday and 
             Sunday
         do_profile : bool, optional
             Defines, if user profile should be generated (default: True).
             If set to False, only number of occupants is saved and no
             profile is generated.
+        timesteps_total : int, optional
+            Total number of timesteps (default: 525600)
+        timediscretization : int, optional
+            Timestep in seconds (default: 60)
+
         """
 
         assert number_occupants > 0, ('At least 1 person has to be defined ' +
@@ -51,7 +57,6 @@ class Occupancy(object):
 
         self._kind = 'occupancy'
         self.number_occupants = number_occupants
-        self.environment = environment
         self.occupancy = None  # Occupancy profile
         self.initial_day = initial_day
 
@@ -63,12 +68,10 @@ class Occupancy(object):
         Generate stochastic occupancy profile based on number of occupants
         and weekday.
         """
-        src_path = os.path.dirname(os.path.dirname(os.path.dirname
-            (os.path.abspath(
-            __file__))))
-        folder_path = os.path.join(src_path, 'inputs',
-                                   'stochastic_electrical_load',
-                                   'constants')
+        this_path = os.path.dirname(os.path.abspath(__file__))
+        src_path = os.path.dirname(this_path)
+        folder_path = os.path.join(src_path, 'inputs', 'constants')
+
         if not Occupancy.occ_start_states_loaded:
             # Load start states matrixes
             Occupancy.occ_start_states_loaded = True
@@ -104,7 +107,7 @@ class Occupancy(object):
         # Make a full year occupancy computation
         occupancy = []
         # Loop over all days
-        for i in range(self.environment.timer.totalDays):
+        for i in range(365):  # Make analysis for full year
             if (i + self.initial_day) % 7 in (0, 6):
                 weekend = True
             else:

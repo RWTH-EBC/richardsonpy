@@ -36,4 +36,4 @@ setup(name='richardsonpy',
       author_email='ebc-teaser@eonerc.rwth-aachen.de',
       license='GPL-3.0',
       packages=['richardsonpy'],
-      install_requires=['mako', 'pyxb', 'pytest', 'scipy'])
+      install_requires=['numpy', 'matplotlib', 'xlrd'])
