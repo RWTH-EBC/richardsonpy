@@ -27,7 +27,7 @@ class Occupancy(object):
 
     type_weekday = ["wd", "we"]  # weekday, weekend
 
-    def __init__(self, number_occupants, initial_day=1,
+    def __init__(self, number_occupants, initial_day=1, nb_days=365,
                  do_profile=True):
         """
         This class loads all input data before 
@@ -39,15 +39,13 @@ class Occupancy(object):
         initial_day : int, optional
             Initial day. 1-5 correspond to Monday-Friday, 6-7 to Saturday and 
             Sunday
+        nb_days : int, optional
+            Number of days, which should be used to generate profile
+            (default: 365)
         do_profile : bool, optional
             Defines, if user profile should be generated (default: True).
             If set to False, only number of occupants is saved and no
             profile is generated.
-        timesteps_total : int, optional
-            Total number of timesteps (default: 525600)
-        timediscretization : int, optional
-            Timestep in seconds (default: 60)
-
         """
 
         assert number_occupants > 0, ('At least 1 person has to be defined ' +
@@ -55,18 +53,34 @@ class Occupancy(object):
         assert number_occupants <= 5, ('Max. allowed number of occupants ' +
                                        'per apartment is 5')
 
+        assert nb_days > 0, 'Number of days must be larger than zero.'
+
+        assert initial_day in [1, 2, 3, 4, 5, 6, 7]
+
         self._kind = 'occupancy'
         self.number_occupants = number_occupants
         self.occupancy = None  # Occupancy profile
+        self.initial_occupancy = None  # Occupancy start states
         self.initial_day = initial_day
 
-        if do_profile:
-            self.gen_occ_profile()
+        if self.initial_day <= 5:
+            self.weekend = False
+        else:
+            self.weekend = True
 
-    def gen_occ_profile(self):
+        if do_profile:
+            self.gen_occ_profile(nb_days=nb_days)
+
+    def gen_occ_profile(self, nb_days):
         """
         Generate stochastic occupancy profile based on number of occupants
         and weekday.
+
+        Parameters
+        ----------
+        nb_days : int, optional
+            Number of days, which should be used to generate profile
+            (default: 365)
         """
         this_path = os.path.dirname(os.path.abspath(__file__))
         src_path = os.path.dirname(this_path)
@@ -102,12 +116,12 @@ class Occupancy(object):
         start_states = Occupancy.occ_start_states
         start_probs = start_states[self.type_weekday[self.weekend]]
         self.initial_occupancy = self._get_start_state(
-                                      start_probs[:][self.number_occupants])
+            start_probs[:][self.number_occupants])
 
         # Make a full year occupancy computation
         occupancy = []
         # Loop over all days
-        for i in range(365):  # Make analysis for full year
+        for i in range(nb_days):
             if (i + self.initial_day) % 7 in (0, 6):
                 weekend = True
             else:
@@ -118,15 +132,16 @@ class Occupancy(object):
         occupancy = np.array(occupancy)
         self.occupancy = np.reshape(occupancy, occupancy.size)
 
+
     def _get_start_state(self, start_probabilities):
         """
         Determine the active occupancy start state.
         """
         # Pick a random number to determine the start state
-        fRand = random.random()
+        f_rand = random.random()
 
         # Reset the cumulative probability count
-        fCumulativeP = 0
+        f_cumulative_p = 0
 
         # Return value
         result = 0
@@ -136,8 +151,8 @@ class Occupancy(object):
         i = 0
 
         while not found:
-            fCumulativeP += start_probabilities[i]
-            if (fRand < fCumulativeP or i >= len(start_probabilities) - 1):
+            f_cumulative_p += start_probabilities[i]
+            if (f_rand < f_cumulative_p or i >= len(start_probabilities) - 1):
                 result = i
                 found = True
             i += 1

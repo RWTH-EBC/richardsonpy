@@ -16,15 +16,12 @@ def exampe_occupancy():
 
     #  Pointer to occupancy profile
     occupancy_profile = occupancy_object.occupancy
-
-    print('Occupancy profile:')
-    print(occupancy_profile)
     
     print('Maximum number of active occupants:')
     print(np.max(occupancy_profile))
 
     plt.figure()
-    plt.plot(occupancy_object.occupancy[:200])
+    plt.plot(occupancy_profile[:200])
     plt.ylabel('Number of active occupants')
     plt.show()
 

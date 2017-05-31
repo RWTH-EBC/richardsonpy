@@ -9,50 +9,51 @@ Created on Tue Jul 21 14:09:28 2015
 from __future__ import division
 import os
 import numpy as np
-import pycity.functions.stochastic_electrical_load.lighting_model as lighting_model
-import pycity.functions.stochastic_electrical_load.appliance_model as appliance_model
+import richardsonpy.functions.lighting_model as lighting_model
+import richardsonpy.functions.appliance_model as appliance_model
 
 
-class Electricity_profile(object):
+class ElectricityProfile(object):
     """
+    ElectricityProfile class
     """
 
-    type_weekday = ["wd", "we"] # weekday, weekend
-    
+    type_weekday = ["wd", "we"]  # weekday, weekend
+
     # Load statistics for appliances (transition probability matrix)
     activity_statistics = {}
     activity_statistics_loaded = False
-    
-    
+
     def __init__(self, appliances, lightbulbs):
         """
-        This class loads all input data before 
+        This class loads all input data
         
         Parameters
         ----------
         appliances : list
-            List of appliance objects
-        ligthbulbs :
+            List of appliance configurations
+        ligthbulbs : list
+            List of lightbulb configurations
         """
         src_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        folder = os.path.join(src_path, 'inputs', 'stochastic_electrical_load', 'constants')
-        if not Electricity_profile.activity_statistics_loaded:
+        folder = os.path.join(src_path, 'inputs', 'stochastic_electrical_load',
+                              'constants')
+        if not ElectricityProfile.activity_statistics_loaded:
             # Load activity statistics
-            Electricity_profile.activity_statistics_loaded = True
-            
+            ElectricityProfile.activity_statistics_loaded = True
+
             for weekday in self.type_weekday:
-                filename = "ActiveAppliances_" +weekday+".csv"
+                filename = "ActiveAppliances_" + weekday + ".csv"
                 file_path = os.path.join(folder, filename)
                 temp = (np.loadtxt(file_path, delimiter=";")).tolist()
-                Electricity_profile.activity_statistics[weekday] = temp
-        
+                ElectricityProfile.activity_statistics[weekday] = temp
+
         # Create lighting configuration
         self.lighting_config = lighting_model.LightingModelConfiguration()
-        
+
         # Save inputs
         self.appliances = appliances
         self.lightbulbs = lightbulbs
-
 
     def _get_month(self, day, leap_year=False):
         """
@@ -61,14 +62,14 @@ class Electricity_profile(object):
             days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         else:
             days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        
+
         days_summed = np.cumsum(days)
-        
+
         for i in range(len(days)):
             if days_summed[i] >= day:
                 break
         return int(i + 1)
-    
+
     def demands(self, irradiation, weekend, day, occupancy):
         """
         Parameters
@@ -84,22 +85,22 @@ class Electricity_profile(object):
             Occupancy for one day (10 minute resolution)
         """
         month = self._get_month(day)
-        
+
         # Lighting
         fun = lighting_model.run_lighting_simulation
         demand_lighting = fun(occupancy, self.lightbulbs, irradiation,
                               self.lighting_config)
-        
+
         # Appliances
         fun = appliance_model.run_application_simulation
         type_weekday = self.type_weekday[weekend]
         activity_statistics = self.activity_statistics[type_weekday]
-        demand_appliances = fun(occupancy, self.appliances, 
+        demand_appliances = fun(occupancy, self.appliances,
                                 activity_statistics, month)
-                                
+
         total_demand_lighting = np.sum(demand_lighting, axis=0)
         total_demand_appliances = np.sum(demand_appliances, axis=0)
-        
+
         total_demand = total_demand_appliances + total_demand_lighting
-        
+
         return (total_demand, total_demand_lighting, total_demand_appliances)
