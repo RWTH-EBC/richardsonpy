@@ -30,7 +30,7 @@ class Occupancy(object):
     def __init__(self, number_occupants, initial_day=1, nb_days=365,
                  do_profile=True):
         """
-        This class loads all input data before 
+        Constructor of occupancy object
         
         Parameters
         ----------
