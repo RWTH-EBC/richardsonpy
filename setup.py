@@ -3,7 +3,7 @@
 """
 richardsonpy: Package with Python version of Richardson tool
 
-Original version published under GPL by
+Original version published under GNU GENERAL PUBLIC LICENSE by
 Ian Richardson,
 Murray Thomson and
 David Infield
