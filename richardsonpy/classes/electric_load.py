@@ -79,6 +79,7 @@ class ElectricLoad(object):
 
         self.light_load = None  # Lighting profile in W
         self.app_load = None  # Appliance power profile in W
+        self.loadcurve = None  # El. power profile in W
 
         if calc_profile:
             self.calc_stoch_el_profile(q_direct=q_direct, q_diffuse=q_diffuse,
