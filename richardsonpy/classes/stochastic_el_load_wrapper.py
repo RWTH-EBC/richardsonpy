@@ -9,8 +9,8 @@ Created on Tue Jul 21 14:09:28 2015
 from __future__ import division
 import os
 import numpy as np
-import richardsonpy.functions.lighting_model as lighting_model
-import richardsonpy.functions.appliance_model as appliance_model
+import richardsonpy.classes.lighting as lighting_model
+import richardsonpy.classes.appliance as appliance_model
 
 
 class ElectricityProfile(object):
@@ -35,9 +35,8 @@ class ElectricityProfile(object):
         ligthbulbs : list
             List of lightbulb configurations
         """
-        src_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-        folder = os.path.join(src_path, 'inputs', 'stochastic_electrical_load',
-                              'constants')
+        src_path = os.path.dirname(os.path.dirname(__file__))
+        folder = os.path.join(src_path, 'inputs', 'constants')
         if not ElectricityProfile.activity_statistics_loaded:
             # Load activity statistics
             ElectricityProfile.activity_statistics_loaded = True

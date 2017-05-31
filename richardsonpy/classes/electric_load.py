@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 """
-
+Script holding ElectricLoad class
 """
 
 import os
@@ -11,6 +11,7 @@ import richardsonpy.classes.appliance as app_model
 import richardsonpy.classes.lighting as light_model
 import richardsonpy.classes.stochastic_el_load_wrapper as wrapper
 import richardsonpy.functions.change_resolution as cr
+import richardsonpy.functions.load_radiation as loadrad
 
 
 class ElectricLoad(object):
@@ -141,8 +142,8 @@ class ElectricLoad(object):
 
         # Create wrapper object
         timestepsDay = int(86400 / timestep)
-        self.wrapper = wrapper.Electricity_profile(self.appliances,
-                                                   self.lights)
+        self.wrapper = wrapper.ElectricityProfile(self.appliances,
+                                                  self.lights)
 
         # Make full year simulation
         demand = []
@@ -216,9 +217,9 @@ class ElectricLoad(object):
             res = light_load_new + app_load
 
         # Change time resolution
-        loadcurve = cr.changeResolution(res, 60, timestep)
-        light_load = cr.changeResolution(light_load, 60, timestep)
-        app_load = cr.changeResolution(app_load, 60, timestep)
+        loadcurve = cr.change_resolution(res, 60, timestep)
+        light_load = cr.change_resolution(light_load, 60, timestep)
+        app_load = cr.change_resolution(app_load, 60, timestep)
 
         #  Normalize el. load profile to annual_demand
         if do_normalization:
@@ -241,13 +242,41 @@ class ElectricLoad(object):
 
         self.loadcurve = loadcurve
 
-        return loadcurve
-
 
 if __name__ == '__main__':
+    #  Total number of occupants in apartment
     nb_occ = 3
 
-    occ_profile = np.random.randint(low=1, high=nb_occ, size=365 * 24 * 3600 / 600)
+    import richardsonpy.classes.occupancy as occ
 
-    powercurve = ElectricLoad(occ_profile=occ_profile, total_nb_occ=nb_occ,
-                              q_direct, q_diffuse)
+    #  Generate occupancy object
+    occ_obj = occ.Occupancy(number_occupants=nb_occ)
+
+    #  Get radiation
+    (q_direct, q_diffuse) = loadrad.get_rad_from_try_path()
+
+    #  Generate stochastic electric power object
+    el_load_obj = ElectricLoad(occ_profile=occ_obj.occupancy,
+                               total_nb_occ=nb_occ,
+                               q_direct=q_direct, q_diffuse=q_diffuse)
+
+    occ_profile = cr.change_resolution(values=occ_obj.occupancy,
+                                      old_res=600,
+                                      new_res=60)
+
+    import matplotlib.pyplot as plt
+
+    fig = plt.figure()
+    fig.add_subplot(211)
+    plt.plot(occ_profile[0:1440], label='occupancy')
+    plt.xlabel('Timestep in minutes')
+    plt.ylabel('Number of active occupants')
+
+    fig.add_subplot(212)
+    plt.plot(el_load_obj.loadcurve[0:1440], label='El. load')
+    plt.xlabel('Timestep in minutes')
+    plt.ylabel('Electric power in W')
+
+    plt.tight_layout()
+    plt.show()
+    plt.close()

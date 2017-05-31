@@ -12,7 +12,7 @@ import numpy as np
 import math
 
 
-def changeResolution(values, oldResolution, newResolution, method="mean"):
+def change_resolution(values, old_res, new_res, method="mean"):
     """
     Change the temporal resolution of values that have a constant sampling rate
 
@@ -20,21 +20,21 @@ def changeResolution(values, oldResolution, newResolution, method="mean"):
     ----------
     values : array-like
         data points
-    oldResolution : integer
-        temporal resolution of the given values. oldResolution=3600 means
+    old_res : integer
+        temporal resolution of the given values. old_res=3600 means
         hourly sampled data
-    newResolution : integer
+    new_res : integer
         temporal resolution of the given data shall be converted to
     method : ``{"mean"; "sum"}``, optional
         - ``"mean"`` : compute mean values while resampling (e.g. for power).
         - ``"sum"``  : compute sum values while resampling (e.g. for energy).
     """
     # Compute original time indexes
-    timeOld = np.arange(len(values)) * oldResolution
+    timeOld = np.arange(len(values)) * old_res
 
     # Compute new time indexes
-    length = math.ceil(len(values) * oldResolution / newResolution)
-    timeNew = np.arange(length) * newResolution
+    length = math.ceil(len(values) * old_res / new_res)
+    timeNew = np.arange(length) * new_res
 
     # Sample means or sum values
     if method == "mean":
@@ -45,8 +45,8 @@ def changeResolution(values, oldResolution, newResolution, method="mean"):
         # Add one dummy value to later use diff (which reduces the number of
         # indexes by one)
         values = np.cumsum(np.concatenate(([0], values)))
-        timeOld = np.concatenate((timeOld, [timeOld[-1] + oldResolution]))
-        timeNew = np.concatenate((timeNew, [timeNew[-1] + newResolution]))
+        timeOld = np.concatenate((timeOld, [timeOld[-1] + old_res]))
+        timeNew = np.concatenate((timeNew, [timeNew[-1] + new_res]))
 
         # Interpolate
         valuesResampled = np.interp(timeNew, timeOld, values)
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     values_old = np.arange(2000)
     dt_old = 60
     dt_new = 600
-    values_new = changeResolution(values_old, dt_old, dt_new)
+    values_new = change_resolution(values_old, dt_old, dt_new)
 
     #  Define src path
     src_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -73,8 +73,8 @@ if __name__ == "__main__":
     dt_temp_old = 3600
     dt_temp_short = 900
     dt_temp_long = 7200
-    temp_long = changeResolution(temp, dt_temp_old, dt_temp_long)
-    temp_short = changeResolution(temp, dt_temp_old, dt_temp_short)
+    temp_long = change_resolution(temp, dt_temp_old, dt_temp_long)
+    temp_short = change_resolution(temp, dt_temp_old, dt_temp_short)
 
     #  Energy - sum values
     np.random.seed(0)
@@ -83,9 +83,9 @@ if __name__ == "__main__":
     dt_prof_short = 20
     dt_prof_long = 900
     dt_prof_huge = 3600
-    prof_short = changeResolution(profile, dt_prof_old, dt_prof_short)
-    prof_long = changeResolution(profile, dt_prof_old, dt_prof_long)
-    prof_huge = changeResolution(profile, dt_prof_old, dt_prof_huge)
+    prof_short = change_resolution(profile, dt_prof_old, dt_prof_short)
+    prof_long = change_resolution(profile, dt_prof_old, dt_prof_long)
+    prof_huge = change_resolution(profile, dt_prof_old, dt_prof_huge)
 
     slp_filename = 'slp_el_h0.txt'
     input_path = os.path.join(src_path, 'inputs', 'standard_load_profile',
@@ -94,5 +94,5 @@ if __name__ == "__main__":
     dt_slp = 900
     dt_slp_short = 450
     dt_slp_long = 3600
-    slp_short = changeResolution(slp, dt_slp, dt_slp_short, "sum")
-    slp_long = changeResolution(slp, dt_slp, dt_slp_long, "sum")
+    slp_short = change_resolution(slp, dt_slp, dt_slp_short, "sum")
+    slp_long = change_resolution(slp, dt_slp, dt_slp_long, "sum")

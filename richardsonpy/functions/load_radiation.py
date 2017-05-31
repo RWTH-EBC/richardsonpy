@@ -69,6 +69,30 @@ def get_rad_from_try_data(try_data):
 
     return (q_direct, q_diffuse)
 
+def get_rad_from_try_path(path_try=None):
+    """
+    Loads TRY dataset and returns direct and diffuse radiation
+
+    Parameters
+    ----------
+    path_try : str, optional
+        Defines path to TRY file (default: None). If set to None, uses
+        default TRY dataset (TRY 2010, region 5)
+
+    Returns
+    -------
+    tuple_rad : tuple (of arrays)
+        Tuple holding direct and diffuse radiation arrays
+        (q_direct, q_diffuse) in W/m^2
+    """
+
+    try_dat = load_try_data(path_try=path_try)
+
+    (q_direct, q_diffuse) = get_rad_from_try_data(try_data=try_dat)
+
+    return (q_direct, q_diffuse)
+
+
 if __name__ == '__main__':
 
     try_dat = load_try_data()
