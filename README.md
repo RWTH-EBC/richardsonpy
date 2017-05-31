@@ -18,7 +18,7 @@ Python version provided by:
 RWTH Aachen University, E.ON Energy Research Center,
 Institute for Energy Efficient Buildings and Indoor Climate
 
-# Installation
+## Installation
 
 Installation is possible via pip:
 
@@ -30,7 +30,7 @@ or
 clone development version via git and install via pip (egglink):
 'pip install -e <your_path_to_richardsonpy>'
 
-# Dependencies
+## Dependencies
 
 richardsonpy requires the following Python packages:
 - numpy
@@ -38,7 +38,7 @@ richardsonpy requires the following Python packages:
 - xlrd
 
 
-#  References
+##  References
 
 [1] I. Richardson, M. Thomson, D. Infield, 
 A high-resolution domestic building occupancy model for energy demand simulations, 
@@ -53,11 +53,11 @@ Domestic electricity use: A high-resolution energy demand model,
 Energy and Buildings 42 (10) (2010) 1878–1887.
 
 
-# License
+## License
 
 richardsonpy is released by RWTH Aachen University's Institute for Energy Efficient Buildings and Indoor Climate (EBC) 
 under the [GNU GENERAL PUBLIC LICENSE](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-# Acknowledgements
+## Acknowledgements
 
 We gratefully acknowledge the financial support by BMWi (German Federal Ministry for Economic Affairs and Energy)
