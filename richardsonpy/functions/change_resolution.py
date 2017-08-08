@@ -74,24 +74,3 @@ if __name__ == "__main__":
     dt_temp_long = 7200
     temp_long = change_resolution(temp, dt_temp_old, dt_temp_long)
     temp_short = change_resolution(temp, dt_temp_old, dt_temp_short)
-
-    #  Energy - sum values
-    np.random.seed(0)
-    profile = np.sort(np.random.rand(1440))  # minute wise sampling
-    dt_prof_old = 60
-    dt_prof_short = 20
-    dt_prof_long = 900
-    dt_prof_huge = 3600
-    prof_short = change_resolution(profile, dt_prof_old, dt_prof_short)
-    prof_long = change_resolution(profile, dt_prof_old, dt_prof_long)
-    prof_huge = change_resolution(profile, dt_prof_old, dt_prof_huge)
-
-    slp_filename = 'slp_el_h0.txt'
-    input_path = os.path.join(src_path, 'inputs', 'standard_load_profile',
-                              slp_filename)
-    slp = np.loadtxt(input_path)
-    dt_slp = 900
-    dt_slp_short = 450
-    dt_slp_long = 3600
-    slp_short = change_resolution(slp, dt_slp, dt_slp_short, "sum")
-    slp_long = change_resolution(slp, dt_slp, dt_slp_long, "sum")
