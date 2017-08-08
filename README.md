@@ -36,7 +36,7 @@ richardsonpy requires the following Python packages:
 - numpy
 - matplotlib
 - xlrd
-
+- pandas
 
 ##  References
 
