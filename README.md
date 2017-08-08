@@ -42,15 +42,15 @@ richardsonpy requires the following Python packages:
 
 [1] I. Richardson, M. Thomson, D. Infield, 
 A high-resolution domestic building occupancy model for energy demand simulations, 
-Energy and Buildings 40 (8) (2008) 1560�1566.
+Energy and Buildings 40 (8) (2008) 1560 1566.
 
 [2] I. Richardson, M. Thomson, D. Infield, A. Delahunty, 
 Domestic lighting: A high-resolution energy demand model, 
-Energy and Buildings 41 (7) (2009) 781�789.
+Energy and Buildings 41 (7) (2009) 781 789.
 
 [3] I. Richardson, M. Thomson, D. Infield, C. Clifford, 
 Domestic electricity use: A high-resolution energy demand model, 
-Energy and Buildings 42 (10) (2010) 1878�1887.
+Energy and Buildings 42 (10) (2010) 1878 1887.
 
 
 ## License
