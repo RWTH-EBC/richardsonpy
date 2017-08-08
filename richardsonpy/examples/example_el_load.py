@@ -12,7 +12,7 @@ import richardsonpy.functions.load_radiation as loadrad
 import richardsonpy.classes.electric_load as eload
 
 
-def example_stoch_el_load():
+def example_stoch_el_load(do_plot=False):
     #  Total number of occupants in apartment
     nb_occ = 3
 
@@ -30,22 +30,22 @@ def example_stoch_el_load():
     occ_profile = cr.change_resolution(values=occ_obj.occupancy,
                                       old_res=600,
                                       new_res=60)
+    if do_plot:
+        fig = plt.figure()
+        fig.add_subplot(211)
+        plt.plot(occ_profile[0:1440], label='occupancy')
+        plt.xlabel('Timestep in minutes')
+        plt.ylabel('Number of active occupants')
 
-    fig = plt.figure()
-    fig.add_subplot(211)
-    plt.plot(occ_profile[0:1440], label='occupancy')
-    plt.xlabel('Timestep in minutes')
-    plt.ylabel('Number of active occupants')
+        fig.add_subplot(212)
+        plt.plot(el_load_obj.loadcurve[0:1440], label='El. load')
+        plt.xlabel('Timestep in minutes')
+        plt.ylabel('Electric power in W')
 
-    fig.add_subplot(212)
-    plt.plot(el_load_obj.loadcurve[0:1440], label='El. load')
-    plt.xlabel('Timestep in minutes')
-    plt.ylabel('Electric power in W')
-
-    plt.tight_layout()
-    plt.show()
-    plt.close()
+        plt.tight_layout()
+        plt.show()
+        plt.close()
 
 
 if __name__ == '__main__':
-    example_stoch_el_load()
+    example_stoch_el_load(do_plot=True)
