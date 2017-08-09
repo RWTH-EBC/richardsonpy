@@ -60,7 +60,7 @@ class Appliances:
                         row_float.append(float(col))
     
                     result.append(row_float)
-        except:
+        except:  # pragma: no cover
             with open(filename, 'r') as input:
                 reader = csv.reader(input, delimiter=';')
                 next(reader) # Skip first line!

@@ -72,7 +72,7 @@ def load_lighting_profile(filename, index=0):
                     row_float.append(float(row[i]))
                     i += 1
                 read_in.append(row_float)
-    except:
+    except:  # pragma: no cover
         with open(filename, 'r') as input:
             reader = csv.reader(input, delimiter=';')
             for row in reader:
