@@ -25,6 +25,8 @@
 .cache/
 __pycache__/
 .coverage
+*coverage_html_report/
+*htmlcov/
 
 #pip install #
 #####################
@@ -33,3 +35,4 @@ __pycache__/
 *.eggs
 dist
 *.pypirc
+
