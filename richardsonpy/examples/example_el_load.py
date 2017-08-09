@@ -4,6 +4,7 @@
 Example script on how to generate a stochastic electric load profile
 """
 
+
 import matplotlib.pyplot as plt
 
 import richardsonpy.classes.occupancy as occ

@@ -33,3 +33,5 @@ __pycache__/
 *.eggs
 dist
 *.pypirc
+
+*htmlcov/
