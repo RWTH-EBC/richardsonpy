@@ -31,7 +31,7 @@ D  Difuse Sonnenbetrahlungsstaerke (horiz. Ebene)               [W/m≤]   abwaert
 IK Information, ob B und oder D Messwert/Rechenwert                     {1;2;3;4;9}
 A  Bestrahlungsstaerke d. atm. Waermestrahlung (horiz. Ebene)    [W/m≤]   abwaerts gerichtet: positiv
 E  Bestrahlungsstaerke d. terr. Waermestrahlung                  [W/m≤]   aufwaerts gerichtet: negativ
-IL Qualitaetsbit fuer die langwelligen Strahlungsgroeﬂen                   {1;2;3;4;5;6;7;8;9}
+IL Qualitaetsbit fuer die langwelligen Strahlungsgroessen                   {1;2;3;4;5;6;7;8;9}
 
 
 RG    IS  MM  DD  HH  N   WR      WG       t       p        x   RF   W     B     D IK    A      E IL
