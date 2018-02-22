@@ -26,7 +26,8 @@ def example_stoch_el_load(do_plot=False):
     #  Generate stochastic electric power object
     el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
                                      total_nb_occ=nb_occ,
-                                     q_direct=q_direct, q_diffuse=q_diffuse)
+                                     q_direct=q_direct, q_diffuse=q_diffuse,
+                                     timestep=60)
 
     occ_profile = cr.change_resolution(values=occ_obj.occupancy,
                                       old_res=600,

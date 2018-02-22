@@ -36,8 +36,8 @@ class ElectricLoad(object):
                  annual_demand=None, is_sfh=True,
                  path_app=None, path_light=None, randomize_appliances=True,
                  prev_heat_dev=False, light_config=0, timestep=60,
-                 initial_day=1, season_light_mod=False, light_mod_fac=0.25,
-                 do_normalization=False, calc_profile=True,
+                 timestep_try=3600, initial_day=1, season_light_mod=False,
+                 light_mod_fac=0.25, do_normalization=False, calc_profile=True,
                  save_app_light=False):
         """
         Constructor of ElectricLoad class
@@ -57,6 +57,8 @@ class ElectricLoad(object):
         prev_heat_dev
         light_config
         timestep
+        timestep_try: int or float
+            Resolution of TRY data used for irradiation profiles
         initial_day
         season_light_mod
         light_mod_fac
@@ -98,7 +100,8 @@ class ElectricLoad(object):
     def calc_stoch_el_profile(self, q_direct, q_diffuse, is_sfh=True,
                               path_app=None, path_light=None,
                               randomize_appliances=True,
-                              prev_heat_dev=False, light_config=0, timestep=60,
+                              prev_heat_dev=False, light_config=0,
+                              timestep=60, timestep_try=3600,
                               initial_day=1, season_light_mod=False,
                               light_mod_fac=0.25,
                               do_normalization=False,
@@ -142,7 +145,7 @@ class ElectricLoad(object):
                                                         index=light_config)
 
         # Create wrapper object
-        timestepsDay = int(86400 / timestep)
+        timestepsDay = int(86400 / timestep_try)
         self.wrapper = wrapper.ElectricityProfile(self.appliances,
                                                   self.lights)
 
@@ -156,7 +159,7 @@ class ElectricLoad(object):
         given_timestamp = timestep * np.arange(timestepsDay)
 
         # Loop over all days
-        for i in range(int(len(irradiance) * timestep / 86400)):
+        for i in range(int(len(irradiance) * timestep_try / 86400)):
             if (i + initial_day) % 7 in (0, 6):
                 weekend = True
             else:
