@@ -36,7 +36,8 @@ class ElectricLoad(object):
     def __init__(self, occ_profile, total_nb_occ, q_direct, q_diffuse,
                  annual_demand=None, is_sfh=True,
                  path_app=None, path_light=None, randomize_appliances=True,
-                 prev_heat_dev=False, light_config=0, initial_day=1,
+                 prev_heat_dev=False, light_config=0, timestep=60,
+                 initial_day=1,
                  season_light_mod=False,
                  light_mod_fac=0.25, do_normalization=False, calc_profile=True,
                  save_app_light=False):
@@ -76,6 +77,11 @@ class ElectricLoad(object):
             hot water are not allowed to be installed.
         light_config : int, optional
             Number of lighting configuration (default: 0)
+        timestep : int, optional
+	        Timestep for profile rescaling (default: 60). Profile is
+	        originally generated with 60 seconds timestep. If another
+	        timestep is given, profile resolution is changed to given
+	        timestep.
         initial_day : int, optional
             Defines number for initial weekday (default: 1).
             1-5 correspond to Monday-Friday, 6-7 to Saturday and
@@ -102,6 +108,8 @@ class ElectricLoad(object):
             Electric power load curve in W
         """
 
+        assert timestep > 0
+
         assert total_nb_occ > 0
         if total_nb_occ > 5:
             msg = 'Implementation of probability matrices does only account' \
@@ -120,7 +128,7 @@ class ElectricLoad(object):
         self.app_load = None  # Appliance power profile in W
         self.loadcurve = None  # El. power profile in W
 
-        self._timestep = 60  # in seconds
+        self._timestep_rich = 60  # in seconds
         self._timestep_try = 3600  # in seconds
 
         if calc_profile:
@@ -130,6 +138,7 @@ class ElectricLoad(object):
                                        randomize_appliances=randomize_appliances,
                                        prev_heat_dev=prev_heat_dev,
                                        light_config=light_config,
+                                       timestep=timestep,
                                        initial_day=initial_day,
                                        season_light_mod=season_light_mod,
                                        light_mod_fac=light_mod_fac,
@@ -140,6 +149,7 @@ class ElectricLoad(object):
                               path_app=None, path_light=None,
                               randomize_appliances=True,
                               prev_heat_dev=False, light_config=0,
+                              timestep=60,
                               initial_day=1, season_light_mod=False,
                               light_mod_fac=0.25,
                               do_normalization=False,
@@ -171,6 +181,11 @@ class ElectricLoad(object):
             hot water are not allowed to be installed.
         light_config : int, optional
             Number of lighting configuration (default: 0)
+        timestep : int, optional
+	        Timestep for profile rescaling (default: 60). Profile is
+	        originally generated with 60 seconds timestep. If another
+	        timestep is given, profile resolution is changed to given
+	        timestep.
         initial_day : int, optional
             Defines number for initial weekday (default: 1).
             1-5 correspond to Monday-Friday, 6-7 to Saturday and
@@ -239,7 +254,7 @@ class ElectricLoad(object):
 
         irradiance = q_direct + q_diffuse
         required_timestamp = np.arange(1440)
-        given_timestamp = self._timestep * np.arange(timestepsDay)
+        given_timestamp = self._timestep_rich * np.arange(timestepsDay)
 
         # Loop over all days
         for i in range(int(len(irradiance) * self._timestep_try / 86400)):
@@ -303,15 +318,17 @@ class ElectricLoad(object):
 
             res = light_load_new + app_load
 
-        # Change time resolution
-        loadcurve = cr.change_resolution(res, 60, self._timestep)
-        light_load = cr.change_resolution(light_load, 60, self._timestep)
-        app_load = cr.change_resolution(app_load, 60, self._timestep)
+        # Change time resolution to given timestep
+        loadcurve = cr.change_resolution(res, self._timestep_rich, timestep)
+        light_load = cr.change_resolution(light_load, self._timestep_rich,
+                                          timestep)
+        app_load = cr.change_resolution(app_load, self._timestep_rich,
+                                        timestep)
 
         #  Normalize el. load profile to annual_demand
         if do_normalization:
             #  Convert power to energy values
-            energy_curve = loadcurve * self._timestep  # in Ws
+            energy_curve = loadcurve * timestep  # in Ws
 
             #  Sum up energy values (plus conversion from Ws to kWh)
             curr_el_dem = sum(energy_curve) / (3600 * 1000)
