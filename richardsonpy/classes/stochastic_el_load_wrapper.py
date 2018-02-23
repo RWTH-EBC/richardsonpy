@@ -94,12 +94,21 @@ class ElectricityProfile(object):
         fun = appliance_model.run_application_simulation
         type_weekday = self.type_weekday[weekend]
         activity_statistics = self.activity_statistics[type_weekday]
-        demand_appliances = fun(occupancy, self.appliances,
-                                activity_statistics, month)
+        demand_appliances, demand_appliances_q = fun(occupancy, self.appliances, activity_statistics, month)
+        # active demand and reactive demand (q)
 
         total_demand_lighting = np.sum(demand_lighting, axis=0)
+
         total_demand_appliances = np.sum(demand_appliances, axis=0)
 
         total_demand = total_demand_appliances + total_demand_lighting
 
-        return (total_demand, total_demand_lighting, total_demand_appliances)
+        # reactive demand (q) for appliances and lightning and total
+        total_demand_lighting_q = np.sum(demand_lighting, axis=0) * np.tan(np.arccos(0.97))  # PF for lightning 0.97
+
+        total_demand_appliances_q = np.sum(demand_appliances_q, axis=0)
+
+        total_demand_q = total_demand_appliances_q + total_demand_lighting_q
+
+        return (total_demand, total_demand_lighting, total_demand_appliances, total_demand_q, total_demand_lighting_q,
+                total_demand_appliances_q)

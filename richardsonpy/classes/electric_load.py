@@ -83,6 +83,10 @@ class ElectricLoad(object):
         self.app_load = None  # Appliance power profile in W
         self.loadcurve = None  # El. power profile in W
 
+        self.light_load_q = None  # Lighting profile in W
+        self.app_load_q = None  # Appliance power profile in W
+        self.loadcurve_q = None  # El. reactive power profile (Q) in VAr
+
         if calc_profile:
             self.calc_stoch_el_profile(q_direct=q_direct, q_diffuse=q_diffuse,
                                        is_sfh=is_sfh, path_app=path_app,
@@ -149,10 +153,14 @@ class ElectricLoad(object):
         self.wrapper = wrapper.ElectricityProfile(self.appliances,
                                                   self.lights)
 
-        # Make full year simulation
+        # Make full year simulation active and reactive power (q)
         demand = []
         light_load = []
         app_load = []
+
+        demand_q = []
+        light_load_q = []
+        app_load_q = []
 
         irradiance = q_direct + q_diffuse
         required_timestamp = np.arange(1440)
@@ -165,14 +173,13 @@ class ElectricLoad(object):
             else:
                 weekend = False
 
-            irrad_day = irradiance[
-                        timestepsDay * i: timestepsDay * (i + 1)]
+            irrad_day = irradiance[timestepsDay * i: timestepsDay * (i + 1)]
             current_irradiation = np.interp(required_timestamp,
                                             given_timestamp, irrad_day)
 
             current_occupancy = self.occ_profile[144 * i: 144 * (i + 1)]
 
-            (el_p_curve, light_p_curve, app_p_curve) = \
+            (el_p_curve, light_p_curve, app_p_curve, el_q_curve, light_q_curve, app_q_curve) = \
                 self.wrapper.demands(current_irradiation,
                                      weekend,
                                      i,
@@ -182,6 +189,10 @@ class ElectricLoad(object):
             light_load.append(light_p_curve)
             app_load.append(app_p_curve)
 
+            demand_q.append(el_q_curve)
+            light_load_q.append(light_q_curve)
+            app_load_q.append(app_q_curve)
+
         res = np.array(demand)
         light_load = np.array(light_load)
         app_load = np.array(app_load)
@@ -189,6 +200,15 @@ class ElectricLoad(object):
         res = np.reshape(res, res.size)
         light_load = np.reshape(light_load, light_load.size)
         app_load = np.reshape(app_load, app_load.size)
+
+        # reactive power (q)
+        res_q = np.array(demand_q)
+        light_load_q = np.array(light_load_q)
+        app_load_q = np.array(app_load_q)
+
+        res_q = np.reshape(res_q, res_q.size)
+        light_load_q = np.reshape(light_load_q, light_load_q.size)
+        app_load_q = np.reshape(app_load_q, app_load_q.size)
 
         if season_light_mod:
             #  Put cosine-wave on lighting over the year to estimate
@@ -204,6 +224,7 @@ class ElectricLoad(object):
             ref_light_power = max(light_load)
 
             light_load_new = np.zeros(len(light_load))
+            light_load_new_q = np.zeros(len(light_load_q))
 
             for i in range(len(light_load)):
                 if light_load[i] == 0:
@@ -217,13 +238,20 @@ class ElectricLoad(object):
 
             #  Rescale to original lighting energy demand
             light_load_new *= light_energy / light_energy_new
+            light_load_new_q *= light_energy / light_energy_new
 
             res = light_load_new + app_load
+            res_q = light_load_new_q + app_load_q
 
         # Change time resolution
         loadcurve = cr.change_resolution(res, 60, timestep)
         light_load = cr.change_resolution(light_load, 60, timestep)
         app_load = cr.change_resolution(app_load, 60, timestep)
+
+        # reactive power
+        loadcurve_q = cr.change_resolution(res_q, 60, timestep)
+        light_load_q = cr.change_resolution(light_load_q, 60, timestep)
+        app_load_q = cr.change_resolution(app_load_q, 60, timestep)
 
         #  Normalize el. load profile to annual_demand
         if do_normalization:
@@ -240,11 +268,19 @@ class ElectricLoad(object):
             light_load *= con_factor
             app_load *= con_factor
 
+            #  Rescale load curves (reactive power)
+            loadcurve_q *= con_factor
+            light_load_q *= con_factor
+            app_load_q *= con_factor
+
         if save_app_light:
             self.light_load = light_load
             self.app_load = app_load
+            self.light_load_q = light_load_q
+            self.app_load_q = app_load_q
 
         self.loadcurve = loadcurve
+        self.loadcurve_q = loadcurve_q
 
 
 if __name__ == '__main__':
@@ -277,7 +313,9 @@ if __name__ == '__main__':
     plt.ylabel('Number of active occupants')
 
     fig.add_subplot(212)
-    plt.plot(el_load_obj.loadcurve[0:1440], label='El. load')
+    plt.plot(el_load_obj.loadcurve[0:1440], label='El. load P')
+    plt.plot(el_load_obj.loadcurve_q[0:1440], label='El. load Q')
+    plt.legend()
     plt.xlabel('Timestep in minutes')
     plt.ylabel('Electric power in W')
 

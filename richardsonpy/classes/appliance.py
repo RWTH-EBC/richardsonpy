@@ -10,6 +10,7 @@ from __future__ import division
 import random
 import math
 import csv
+import numpy as np
 from collections import namedtuple
 
 
@@ -32,6 +33,7 @@ class Appliances:
     10      8               Activity use profile (Number code, see below ***)
     11      9               Activity probability
     12      10              Appliance mean power factor
+    13      11              Appliance reactive power behavior (0-> capacitive (Q<0); 1-> inductive (Q>0))
     
     *** Codes for the activity profile:
     0 - watching TV
@@ -43,6 +45,11 @@ class Appliances:
     6 - ACTIVE OCC (not further described in original tool)
     7 - LEVEL (not further described in original tool)
     8 - CUSTOM (not further described in original tool)
+
+    *** Appliance mean power factor and reactive power behavior from Dissertation Scheffler:
+    Jörg Scheffler - "Bestimmung der maximal zulässigen Netzanschlussleistung photovoltaischer
+                      Energiewandlungsanlagen in Wohnsiedlungsgebieten",
+                      Dissertation, TU Chemnitz, 2002.
     """
     
     def load_appliances(self, filename):
@@ -50,6 +57,7 @@ class Appliances:
         Load the installed appliances
         """
         result = []
+
         try:
             with open(filename, 'rt', encoding='utf8') as input:
                 reader = csv.reader(input, delimiter=';')
@@ -307,7 +315,9 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
     oMonthlyRelativeTemperatureModifier = [1.63, 1.821, 1.595, 0.867, 0.763, 0.191, 0.156, 0.087, 0.399, 0.936, 1.561, 1.994]
     
     # Array for storing the results is initialized (in VBA, this is already done with the right dimensions)
+    # active power and reactive power (q)
     result = []
+    result_q = []
     
     # Remake of the Excel-Sheet that stores the appliances' data:
 #    app = Appliances(path+'\\HouseSpecification\\', 'Appliances.csv')
@@ -338,6 +348,8 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
         sUseProfile = app.data[i][8]
         iRestartDelay = app.data[i][6]
         bHasAppliance = app.data[i][0]
+        iPF = app.data[i][10]  # power factor
+        iPFind = app.data[i][11]  # is inductive behavior? (0-> no; 1-> yes)
         
         #Formatting the output --- not necessary
         
@@ -347,6 +359,7 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
             for j in range(24*60): # 24 hours with 60 minutes each
                 no_consumption.append(0)
             result.append(no_consumption)
+            result_q.append(no_consumption)
         else: # Device is installed in the current building:
         
             # Randomly delay the start of appliances that have a restart delay (e.g. cold appliances with more regular intervals)
@@ -354,9 +367,16 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
             
             # Make the rated power variable over a normal distribution to provide some variation
             iRatedPower = random.gauss(iRatedPower, iRatedPower/10)
-            
-            consumption = []            
-            
+
+            # calculate the tangent phi of the appliance power consumption; tan(phi) = Q/P
+            if iPFind == 0:
+                itanphi = -np.tan(np.arccos(iPF))  # capacitive
+            else:
+                itanphi = np.tan(np.arccos(iPF))  # inductive
+
+            consumption = []
+            consumption_q = []
+
             # Loop through each minute of the day
             for j in range(24*60): # 24 hours with 60 minutes each
                 
@@ -438,11 +458,11 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
                         if (random.random() <= dProbability):
                             # This is a start event
                             [iCycleTimeLeft, iPower, iRestartDelayTimeLeft] = start_appliance(iRestartDelay, iCycleTimeLeft, i, iStandbyPower, iRatedPower, iMeanCycleLength)
-                            
+
 
                 else: # The appliance is on - if the occupants become inactive, switch off the appliance
                     if (iActiveOccupants == 0) and (sUseProfile != 7) and (sUseProfile != 2) and (sUseProfile != 8):
-                       #(iActiveOccupants = 0) and (sUseProfile <> "LEVEL") and (sUseProfile <> "ACT_LAUNDRY") and (sUseProfile <> "CUSTOM"):  
+                       #(iActiveOccupants = 0) and (sUseProfile <> "LEVEL") and (sUseProfile <> "ACT_LAUNDRY") and (sUseProfile <> "CUSTOM"):
                     
                         # Do nothing. The activity will be completed upon the return of the active occupancy.
                         # Note that LEVEL means that the appliance use is not related to active occupancy.
@@ -455,8 +475,10 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
                         # Decrement the cycle time left
                         iCycleTimeLeft = iCycleTimeLeft - 1
                 
-                consumption.append(iPower)
+                consumption.append(iPower)  # append active power
+                consumption_q.append(iPower * itanphi)  # append reactive power
             
             result.append(consumption)
+            result_q.append(consumption_q)
     
-    return result
+    return result, result_q
