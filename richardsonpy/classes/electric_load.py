@@ -46,31 +46,72 @@ class ElectricLoad(object):
         ----------
         occ_profile : array-like
             Occupancy profile given at 10-minute intervals for a full year
-        total_nb_occ
-        q_direct
-        q_diffuse
-        annual_demand
-        is_sfh
-        path_app
-        path_light
-        randomize_appliances
-        prev_heat_dev
-        light_config
-        timestep
-        timestep_try: int or float
-            Resolution of TRY data used for irradiation profiles
-        initial_day
-        season_light_mod
-        light_mod_fac
-        do_normalization
-        calc_profile
-        save_app_light
+        total_nb_occ : int
+            Maximum possible number of occupants (does not necessarily need to
+            be equal to max(occ_profile), as there is no guarantee, that
+            maximum number of persons is reached
+        q_direct : array-like
+            Direct radiation in kW/m2
+        q_diffuse : array-like
+            Diffuse radiation in kW/m2
+        annual_demand : float, optional
+            Annual electric energy demand in kWh
+        is_sfh : bool, optional
+            Defines, if building type is of type single family house
+            (default: True). If False, assumes multi-family house.
+        path_app : str, optional
+            Path to appliance input data set (default: None). If None, uses
+            ...\richardsonpy\richardsonpy\inputs\Appliances.csv
+        path_light : str, optional
+            Path to lighting input data set (default: None). If None, uses
+            ...\richardsonpy\richardsonpy\inputs\LightBulbs.csv
+        randomize_appliances : bool, optional
+            Defines, if random set of appliance should be selected
+            (default: True). If False, always uses defined appliances in
+            ...\richardsonpy\richardsonpy\inputs\Appliances.csv
+        prev_heat_dev : bool, optional
+            Enables prevention of electric heating devices and hot water
+            devices (default: False). If True, devices for space heating and
+            hot water are not allowed to be installed.
+        light_config : int, optional
+            Number of lighting configuration (default: 0)
+        timestep : int, optional
+            Timestep for profile generation in seconds (default: 60)
+        timestep_try: int, optional
+            Resolution of TRY data used for irradiation profiles in seconds
+            (default: 3600)
+        initial_day : int, optional
+            Defines number for initial weekday (default: 1).
+            1-5 correspond to Monday-Friday, 6-7 to Saturday and
+            Sunday
+        season_light_mod : bool, optional
+            Defines, if sinus-wave should be used to modify electric load
+            profile to account for seasonal influence, mainly lighting
+            differences in summer and winter month (default: False)
+        light_mod_fac : float optional
+            Modification factor for season_light_mod == True (default: 0.25)
+        do_normalization : bool optional
+            Defines, if profile should be normalized to given annual electric
+            reference demand value in kWh (default: False)
+        calc_profile : bool, optional
+            Defines, if profile should be generated (default: True).
+        save_app_light : bool, optional
+            Defines, if separate electric profiles for appliance and lighting
+            should be saved (default: False). If False, only saves summed up
+            electric load profiles.
 
         Returns
         -------
         loadcurve : array-like
             Electric power load curve in W
         """
+
+        assert total_nb_occ > 0
+        if total_nb_occ > 5:
+            msg = 'Implementation of probability matrices does only account' \
+                  ' for apartments with up to 5 persons per apartment. ' \
+                  'Please select a lower number of occupants!'
+            raise AssertionError(msg)
 
         self.occ_profile = occ_profile  # Occupancy object
         self.total_nb_occ = total_nb_occ  # Total number of occupants
@@ -91,6 +132,7 @@ class ElectricLoad(object):
                                        prev_heat_dev=prev_heat_dev,
                                        light_config=light_config,
                                        timestep=timestep,
+                                       timestep_try=timestep_try,
                                        initial_day=initial_day,
                                        season_light_mod=season_light_mod,
                                        light_mod_fac=light_mod_fac,
@@ -106,6 +148,54 @@ class ElectricLoad(object):
                               light_mod_fac=0.25,
                               do_normalization=False,
                               save_app_light=False):
+        """
+
+        Parameters
+        ----------
+        q_direct : array-like
+            Direct radiation in kW/m2
+        q_diffuse : array-like
+            Diffuse radiation in kW/m2
+        is_sfh : bool, optional
+            Defines, if building type is of type single family house
+            (default: True). If False, assumes multi-family house.
+        path_app : str, optional
+            Path to appliance input data set (default: None). If None, uses
+            ...\richardsonpy\richardsonpy\inputs\Appliances.csv
+        path_light : str, optional
+            Path to lighting input data set (default: None). If None, uses
+            ...\richardsonpy\richardsonpy\inputs\LightBulbs.csv
+        randomize_appliances : bool, optional
+            Defines, if random set of appliance should be selected
+            (default: True). If False, always uses defined appliances in
+            ...\richardsonpy\richardsonpy\inputs\Appliances.csv
+        prev_heat_dev : bool, optional
+            Enables prevention of electric heating devices and hot water
+            devices (default: False). If True, devices for space heating and
+            hot water are not allowed to be installed.
+        light_config : int, optional
+            Number of lighting configuration (default: 0)
+        timestep_try: int, optional
+            Resolution of TRY data used for irradiation profiles in seconds
+            (default: 3600)
+        initial_day : int, optional
+            Defines number for initial weekday (default: 1).
+            1-5 correspond to Monday-Friday, 6-7 to Saturday and
+            Sunday
+        season_light_mod : bool, optional
+            Defines, if sinus-wave should be used to modify electric load
+            profile to account for seasonal influence, mainly lighting
+            differences in summer and winter month (default: False)
+        light_mod_fac : float optional
+            Modification factor for season_light_mod == True (default: 0.25)
+        do_normalization : bool optional
+            Defines, if profile should be normalized to given annual electric
+            reference demand value in kWh (default: False)
+        save_app_light : bool, optional
+            Defines, if separate electric profiles for appliance and lighting
+            should be saved (default: False). If False, only saves summed up
+            electric load profiles.
+        """
 
         this_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -284,3 +374,5 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.show()
     plt.close()
+
+    print(len(el_load_obj.loadcurve))
