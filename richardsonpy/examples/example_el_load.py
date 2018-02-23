@@ -4,7 +4,6 @@
 Example script on how to generate a stochastic electric load profile
 """
 
-
 import matplotlib.pyplot as plt
 
 import richardsonpy.classes.occupancy as occ
@@ -26,12 +25,11 @@ def example_stoch_el_load(do_plot=False):
     #  Generate stochastic electric power object
     el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
                                      total_nb_occ=nb_occ,
-                                     q_direct=q_direct, q_diffuse=q_diffuse,
-                                     timestep=60)
+                                     q_direct=q_direct, q_diffuse=q_diffuse)
 
     occ_profile = cr.change_resolution(values=occ_obj.occupancy,
-                                      old_res=600,
-                                      new_res=60)
+                                       old_res=600,
+                                       new_res=60)
     if do_plot:
         fig = plt.figure()
         fig.add_subplot(211)
@@ -48,6 +46,22 @@ def example_stoch_el_load(do_plot=False):
         plt.show()
         plt.close()
 
+    #  Change resolution of electric load profile from 60 seconds (default)
+    #  to 3600 seconds
+    new_el_load = cr.change_resolution(values=el_load_obj.loadcurve,
+                                       old_res=60,
+                                       new_res=3600)
+    if do_plot:
+        fig = plt.figure()
+
+        plt.plot(new_el_load[0:24])
+        plt.title('Changed resolution to 1 hour timestep')
+        plt.xlabel('Timestep in hours')
+        plt.ylabel('Electric power in W')
+
+        plt.tight_layout()
+        plt.show()
+        plt.close()
 
 if __name__ == '__main__':
     example_stoch_el_load(do_plot=True)

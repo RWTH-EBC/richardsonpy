@@ -3,6 +3,7 @@
 """
 Script holding ElectricLoad class
 """
+from __future__ import division
 
 import os
 import numpy as np
@@ -35,8 +36,8 @@ class ElectricLoad(object):
     def __init__(self, occ_profile, total_nb_occ, q_direct, q_diffuse,
                  annual_demand=None, is_sfh=True,
                  path_app=None, path_light=None, randomize_appliances=True,
-                 prev_heat_dev=False, light_config=0, timestep=60,
-                 timestep_try=3600, initial_day=1, season_light_mod=False,
+                 prev_heat_dev=False, light_config=0, initial_day=1,
+                 season_light_mod=False,
                  light_mod_fac=0.25, do_normalization=False, calc_profile=True,
                  save_app_light=False):
         """
@@ -75,11 +76,6 @@ class ElectricLoad(object):
             hot water are not allowed to be installed.
         light_config : int, optional
             Number of lighting configuration (default: 0)
-        timestep : int, optional
-            Timestep for profile generation in seconds (default: 60)
-        timestep_try: int, optional
-            Resolution of TRY data used for irradiation profiles in seconds
-            (default: 3600)
         initial_day : int, optional
             Defines number for initial weekday (default: 1).
             1-5 correspond to Monday-Friday, 6-7 to Saturday and
@@ -124,6 +120,9 @@ class ElectricLoad(object):
         self.app_load = None  # Appliance power profile in W
         self.loadcurve = None  # El. power profile in W
 
+        self._timestep = 60  # in seconds
+        self._timestep_try = 3600  # in seconds
+
         if calc_profile:
             self.calc_stoch_el_profile(q_direct=q_direct, q_diffuse=q_diffuse,
                                        is_sfh=is_sfh, path_app=path_app,
@@ -131,8 +130,6 @@ class ElectricLoad(object):
                                        randomize_appliances=randomize_appliances,
                                        prev_heat_dev=prev_heat_dev,
                                        light_config=light_config,
-                                       timestep=timestep,
-                                       timestep_try=timestep_try,
                                        initial_day=initial_day,
                                        season_light_mod=season_light_mod,
                                        light_mod_fac=light_mod_fac,
@@ -143,7 +140,6 @@ class ElectricLoad(object):
                               path_app=None, path_light=None,
                               randomize_appliances=True,
                               prev_heat_dev=False, light_config=0,
-                              timestep=60, timestep_try=3600,
                               initial_day=1, season_light_mod=False,
                               light_mod_fac=0.25,
                               do_normalization=False,
@@ -175,9 +171,6 @@ class ElectricLoad(object):
             hot water are not allowed to be installed.
         light_config : int, optional
             Number of lighting configuration (default: 0)
-        timestep_try: int, optional
-            Resolution of TRY data used for irradiation profiles in seconds
-            (default: 3600)
         initial_day : int, optional
             Defines number for initial weekday (default: 1).
             1-5 correspond to Monday-Friday, 6-7 to Saturday and
@@ -235,7 +228,7 @@ class ElectricLoad(object):
                                                         index=light_config)
 
         # Create wrapper object
-        timestepsDay = int(86400 / timestep_try)
+        timestepsDay = int(86400 / self._timestep_try)
         self.wrapper = wrapper.ElectricityProfile(self.appliances,
                                                   self.lights)
 
@@ -246,10 +239,10 @@ class ElectricLoad(object):
 
         irradiance = q_direct + q_diffuse
         required_timestamp = np.arange(1440)
-        given_timestamp = timestep * np.arange(timestepsDay)
+        given_timestamp = self._timestep * np.arange(timestepsDay)
 
         # Loop over all days
-        for i in range(int(len(irradiance) * timestep_try / 86400)):
+        for i in range(int(len(irradiance) * self._timestep_try / 86400)):
             if (i + initial_day) % 7 in (0, 6):
                 weekend = True
             else:
@@ -311,14 +304,14 @@ class ElectricLoad(object):
             res = light_load_new + app_load
 
         # Change time resolution
-        loadcurve = cr.change_resolution(res, 60, timestep)
-        light_load = cr.change_resolution(light_load, 60, timestep)
-        app_load = cr.change_resolution(app_load, 60, timestep)
+        loadcurve = cr.change_resolution(res, 60, self._timestep)
+        light_load = cr.change_resolution(light_load, 60, self._timestep)
+        app_load = cr.change_resolution(app_load, 60, self._timestep)
 
         #  Normalize el. load profile to annual_demand
         if do_normalization:
             #  Convert power to energy values
-            energy_curve = loadcurve * timestep  # in Ws
+            energy_curve = loadcurve * self._timestep  # in Ws
 
             #  Sum up energy values (plus conversion from Ws to kWh)
             curr_el_dem = sum(energy_curve) / (3600 * 1000)
@@ -362,6 +355,7 @@ if __name__ == '__main__':
 
     fig = plt.figure()
     fig.add_subplot(211)
+    plt.title('Occupancy and electric load for 24 hours')
     plt.plot(occ_profile[0:1440], label='occupancy')
     plt.xlabel('Timestep in minutes')
     plt.ylabel('Number of active occupants')
@@ -376,3 +370,22 @@ if __name__ == '__main__':
     plt.close()
 
     print(len(el_load_obj.loadcurve))
+
+    fig = plt.figure()
+    fig.add_subplot(211)
+    plt.title('Annual occupancy and electric load profiles')
+    plt.plot(occ_profile, label='occupancy')
+    plt.xlabel('Timestep in minutes')
+    plt.ylabel('Number of active occupants')
+
+    fig.add_subplot(212)
+    plt.plot(el_load_obj.loadcurve, label='El. load')
+    plt.xlabel('Timestep in minutes')
+    plt.ylabel('Electric power in W')
+
+    plt.tight_layout()
+    plt.show()
+    plt.close()
+
+    sum_el_energy = sum(el_load_obj.loadcurve) * 60 / 3600000
+    print('Electric energy in kWh: ', sum_el_energy)

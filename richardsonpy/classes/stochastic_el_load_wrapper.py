@@ -5,8 +5,8 @@ Created on Tue Jul 21 14:09:28 2015
 
 @author: tsz
 """
-
 from __future__ import division
+
 import os
 import numpy as np
 import richardsonpy.classes.lighting as lighting_model
