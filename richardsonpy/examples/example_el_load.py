@@ -4,6 +4,10 @@
 Example script on how to generate a stochastic electric load profile
 """
 
+#  Seed is for testing purpose, only!
+import random as rd
+rd.seed(1)
+
 import copy
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,6 +22,8 @@ def example_stoch_el_load(do_plot=False):
     #  Total number of occupants in apartment
     nb_occ = 3
 
+    timestep = 3600  # in seconds
+
     #  Generate occupancy object (necessary as input for electric load gen.)
     occ_obj = occ.Occupancy(number_occupants=nb_occ)
 
@@ -28,23 +34,30 @@ def example_stoch_el_load(do_plot=False):
     el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
                                      total_nb_occ=nb_occ,
                                      q_direct=q_direct,
-                                     q_diffuse=q_diffuse)
+                                     q_diffuse=q_diffuse,
+                                     timestep=timestep)
 
     #  Copy occupancy object, before changing its resolution
     #  (occ_obj.occupancy is the pointer to the occupancy profile array)
     occ_profile_copy = copy.copy(occ_obj.occupancy)
 
-    #  Change resolution of occupancy object (to match 60 second timestep
+    #  Change resolution of occupancy object (to match
     #  resolution of el. load profile; necessary for plotting)
     occ_profile_copy = cr.change_resolution(values=occ_profile_copy,
                                             old_res=600,
-                                            new_res=60)
+                                            new_res=timestep)
+
+    #  Calculate el. energy in kWh
+    energy_el_kwh = sum(el_load_obj.loadcurve) * timestep / (3600 * 1000)
+
+    print('Electric energy demand in kWh: ')
+    print(energy_el_kwh)
 
     if do_plot:
         #  Generate time array for plotting
-        timesteps = 1440  # 60 second timesteps
+        timesteps = int(24 * 3600 / timestep)  # Number of timesteps per day
 
-        time_array = np.arange(0, timesteps * 60, 60) / 3600
+        time_array = np.arange(0, timesteps * timestep, timestep) / 3600
 
         fig = plt.figure()
         fig.add_subplot(211)
