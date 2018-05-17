@@ -155,6 +155,7 @@ class ElectricLoad(object):
                               do_normalization=False,
                               save_app_light=False):
         """
+        Calculate stochastic electrical load profile.
 
         Parameters
         ----------
@@ -205,17 +206,18 @@ class ElectricLoad(object):
             electric load profiles.
         """
 
+        #  Define pathes
         this_path = os.path.dirname(os.path.abspath(__file__))
-
         src_path = os.path.dirname(this_path)
 
-        if path_app is None:  # Use default
+        #  Load appliance and light bulb data
+        if path_app is None:  # Use default appliance data set
             path_app = os.path.join(src_path, 'inputs', 'Appliances.csv')
 
-        if path_light is None:  # Use default
+        if path_light is None:  # Use default light bulb configurations
             path_light = os.path.join(src_path, 'inputs', 'LightBulbs.csv')
 
-        # Initialize appliances and lights
+        #  Define reference electric demand
         if self.annual_demand is None:
 
             if is_sfh:
@@ -231,18 +233,18 @@ class ElectricLoad(object):
         # This has to be excluded from the appliances' demand:
         appliancesDemand = 0.91 * self.annual_demand
 
-        #  Get appliances
+        #  Create and save appliances object
         self.appliances = \
             app_model.Appliances(path_app,
                                  annual_consumption=appliancesDemand,
                                  randomize_appliances=randomize_appliances,
                                  prev_heat_dev=prev_heat_dev)
 
-        #  Get lighting configuration
+        #  Create and save light configuration object
         self.lights = light_model.load_lighting_profile(filename=path_light,
                                                         index=light_config)
 
-        # Create wrapper object
+        #  Create wrapper object
         timestepsDay = int(86400 / self._timestep_try)
         self.wrapper = wrapper.ElectricityProfile(self.appliances,
                                                   self.lights)
@@ -252,38 +254,56 @@ class ElectricLoad(object):
         light_load = []
         app_load = []
 
+        #  Total radiation
         irradiance = q_direct + q_diffuse
+
+        #  Array holding index of timesteps (60 second timesteps)
         required_timestamp = np.arange(1440)
+
+        #  Array holding each timestep in seconds
         given_timestamp = self._timestep_rich * np.arange(timestepsDay)
 
-        # Loop over all days
+        #  Loop over all days for whole year
         for i in range(int(len(irradiance) * self._timestep_try / 86400)):
+
+            #  Define, if days is weekday or weekend
             if (i + initial_day) % 7 in (0, 6):
                 weekend = True
             else:
                 weekend = False
 
+            #  Extract array with radiation for each timestep of day
+            #  (assuming hourly timestep)
             irrad_day = irradiance[
                         timestepsDay * i: timestepsDay * (i + 1)]
+
+            #  Interpolate radiation values for required timestep of 60
+            #  seconds
             current_irradiation = np.interp(required_timestamp,
                                             given_timestamp, irrad_day)
 
+            #  Extract current occupancy profile for each timestep of the
+            #  day (600 seconds timestep assumed)
             current_occupancy = self.occ_profile[144 * i: 144 * (i + 1)]
 
+            #  Perform lighting and appliance usage simulation for one day
             (el_p_curve, light_p_curve, app_p_curve) = \
-                self.wrapper.demands(current_irradiation,
-                                     weekend,
-                                     i,
-                                     current_occupancy)
+                self.wrapper.power_sim(irradiation=current_irradiation,
+                                       weekend=weekend,
+                                       day=i,
+                                       occupancy=current_occupancy)
 
+            #  Append results
             demand.append(el_p_curve)
             light_load.append(light_p_curve)
             app_load.append(app_p_curve)
 
+        #  Convert to nd-arrays
         res = np.array(demand)
         light_load = np.array(light_load)
         app_load = np.array(app_load)
 
+        #  Reshape arrays (nd-array structure to 1d structure)
         res = np.reshape(res, res.size)
         light_load = np.reshape(light_load, light_load.size)
         app_load = np.reshape(app_load, app_load.size)
@@ -318,7 +338,7 @@ class ElectricLoad(object):
 
             res = light_load_new + app_load
 
-        # Change time resolution to given timestep
+        # Change time resolution to timestep defined by user
         loadcurve = cr.change_resolution(res, self._timestep_rich, timestep)
         light_load = cr.change_resolution(light_load, self._timestep_rich,
                                           timestep)
@@ -341,9 +361,11 @@ class ElectricLoad(object):
             app_load *= con_factor
 
         if save_app_light:
+            #  Save lighting and appliance el. powers
             self.light_load = light_load
             self.app_load = app_load
 
+        #  Save el. load curve
         self.loadcurve = loadcurve
 
 
@@ -365,8 +387,8 @@ if __name__ == '__main__':
                                q_direct=q_direct, q_diffuse=q_diffuse)
 
     occ_profile = cr.change_resolution(values=occ_obj.occupancy,
-                                      old_res=600,
-                                      new_res=60)
+                                       old_res=600,
+                                       new_res=60)
 
     import matplotlib.pyplot as plt
 
