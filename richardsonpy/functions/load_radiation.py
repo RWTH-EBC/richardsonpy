@@ -71,7 +71,8 @@ def get_rad_from_try_data(try_data):
 
 def get_rad_from_try_path(path_try=None):
     """
-    Loads TRY dataset and returns direct and diffuse radiation
+    Loads TRY dataset and returns direct and diffuse radiation.
+    Default files are returned with 3600 seconds resolution
 
     Parameters
     ----------

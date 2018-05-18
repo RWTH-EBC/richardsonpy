@@ -19,6 +19,8 @@ def main():
     #  Total number of occupants in apartment
     nb_occ = 3
 
+    timestep = 60
+
     import richardsonpy.classes.occupancy as occ
 
     #  Generate occupancy object
@@ -27,14 +29,19 @@ def main():
     #  Get radiation
     (q_direct, q_diffuse) = loadrad.get_rad_from_try_path()
 
+    #  Convert 3600 s timestep to given timestep
+    q_direct = cr.change_resolution(q_direct, old_res=3600, new_res=timestep)
+    q_diffuse = cr.change_resolution(q_diffuse, old_res=3600, new_res=timestep)
+
     #  Generate stochastic electric power object
     el_load_obj = ElectricLoad(occ_profile=occ_obj.occupancy,
                                total_nb_occ=nb_occ,
-                               q_direct=q_direct, q_diffuse=q_diffuse)
+                               q_direct=q_direct,
+                               q_diffuse=q_diffuse)
 
     occ_profile = cr.change_resolution(values=occ_obj.occupancy,
                                        old_res=600,
-                                       new_res=60)
+                                       new_res=timestep)
 
     import matplotlib.pyplot as plt
 
@@ -53,8 +60,6 @@ def main():
     plt.tight_layout()
     plt.show()
     plt.close()
-
-    print(len(el_load_obj.loadcurve))
 
     fig = plt.figure()
     fig.add_subplot(211)
@@ -190,7 +195,6 @@ class ElectricLoad(object):
         self.loadcurve = None  # El. power profile in W
 
         self._timestep_rich = 60  # in seconds
-        self._timestep_try = 3600  # in seconds
 
         if calc_profile:
             self.calc_stoch_el_profile(q_direct=q_direct, q_diffuse=q_diffuse,
@@ -221,9 +225,11 @@ class ElectricLoad(object):
         Parameters
         ----------
         q_direct : array-like
-            Direct radiation in kW/m2
+            Direct radiation in kW/m2 (has to be handed over with resolution
+            of parameter timestep! Otherwise, is going to raise AssertionError)
         q_diffuse : array-like
-            Diffuse radiation in kW/m2
+            Diffuse radiation in kW/m2 (has to be handed over with resolution
+            of parameter timestep! Otherwise, is going to raise AssertionError)
         is_sfh : bool, optional
             Defines, if building type is of type single family house
             (default: True). If False, assumes multi-family house.
@@ -306,7 +312,7 @@ class ElectricLoad(object):
                                                         index=light_config)
 
         #  Create wrapper object
-        timestepsDay = int(86400 / self._timestep_try)
+        timestepsDay = int(86400 / timestep)
         self.wrapper = wrapper.ElectricityProfile(self.appliances,
                                                   self.lights)
 
@@ -318,6 +324,17 @@ class ElectricLoad(object):
         #  Total radiation
         irradiance = q_direct + q_diffuse
 
+        #  Check if irradiance timestep is identical with param. timestep
+        t_irr_365 = int(365 * 3600 * 24 / len(irradiance))
+        t_irr_366 = int(366 * 3600 * 24 / len(irradiance))
+
+        if timestep != t_irr_365 and timestep != t_irr_366:
+            msg = 'Time discretization of irradiance is different from ' \
+                  'timestep ' \
+                  + str(timestep) \
+                  + 'seconds . You need to change the resolution, first!'
+            raise AssertionError(msg)
+
         #  Array holding index of timesteps (60 second timesteps)
         required_timestamp = np.arange(1440)
 
@@ -325,7 +342,7 @@ class ElectricLoad(object):
         given_timestamp = self._timestep_rich * np.arange(timestepsDay)
 
         #  Loop over all days for whole year
-        for i in range(int(len(irradiance) * self._timestep_try / 86400)):
+        for i in range(int(len(irradiance) * timestep / 86400)):
 
             #  Define, if days is weekday or weekend
             if (i + initial_day) % 7 in (0, 6):

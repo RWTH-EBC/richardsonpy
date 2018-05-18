@@ -4,9 +4,9 @@
 Example script on how to generate a stochastic electric load profile
 """
 
-#  Seed is for testing purpose, only!
-import random as rd
-rd.seed(1)
+# #  Seed is for testing purpose, only!
+# import random as rd
+# rd.seed(1)
 
 import copy
 import numpy as np
@@ -22,13 +22,17 @@ def example_stoch_el_load(do_plot=False):
     #  Total number of occupants in apartment
     nb_occ = 3
 
-    timestep = 3600  # in seconds
+    timestep = 60  # in seconds
 
     #  Generate occupancy object (necessary as input for electric load gen.)
     occ_obj = occ.Occupancy(number_occupants=nb_occ)
 
     #  Get radiation (necessary for lighting usage calculation)
     (q_direct, q_diffuse) = loadrad.get_rad_from_try_path()
+
+    #  Convert 3600 s timestep to given timestep
+    q_direct = cr.change_resolution(q_direct, old_res=3600, new_res=timestep)
+    q_diffuse = cr.change_resolution(q_diffuse, old_res=3600, new_res=timestep)
 
     #  Generate stochastic electric power object
     el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,

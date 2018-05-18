@@ -100,9 +100,11 @@ class ElectricityProfile(object):
         month = self._get_month(day)
 
         # Lighting
-        fun = lighting_model.run_lighting_simulation
-        demand_lighting = fun(occupancy, self.lightbulbs, irradiation,
-                              self.lighting_config)
+        demand_lighting = lighting_model.run_lighting_simulation(
+            vOccupancyArray=occupancy,
+            vBulbArray=self.lightbulbs,
+            vIrradianceArray=irradiation,
+            light_mod_config=self.lighting_config)
 
         # Appliances
         fun = appliance_model.run_application_simulation
