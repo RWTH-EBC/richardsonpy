@@ -89,9 +89,9 @@ class ElectricityProfile(object):
         -------
         tup_res : tuple (of arrays)
             Results tuple (power_el_total, power_el_light, power_el_app,
-                total_demand_q,
-                total_demand_lighting_q,
-                total_demand_appliances_q)
+                power_el_total_q,
+                power_el_light_q,
+                power_el_app_q)
             power_el_total : array
                 Array holding total el. power values in Watt
             power_el_light : array
@@ -112,7 +112,10 @@ class ElectricityProfile(object):
         fun = appliance_model.run_application_simulation
         type_weekday = self.type_weekday[weekend]
         activity_statistics = self.activity_statistics[type_weekday]
-        demand_appliances, demand_appliances_q = fun(occupancy, self.appliances, activity_statistics, month)
+        (demand_appliances, demand_appliances_q) = fun(occupancy,
+                                                     self.appliances,
+                                                     activity_statistics,
+                                                     month)
         # active demand and reactive demand (q)
 
         power_el_light = np.sum(demand_lighting, axis=0)
@@ -121,12 +124,13 @@ class ElectricityProfile(object):
         power_el_total = power_el_app + power_el_light
 
         # reactive demand (q) for appliances and lightning and total
-        total_demand_lighting_q = np.sum(demand_lighting, axis=0) * np.tan(np.arccos(0.97))  # PF for lightning 0.97
+        power_el_light_q = np.sum(demand_lighting, axis=0) * np.tan(
+            np.arccos(0.97))  # PF for lightning 0.97
 
-        total_demand_appliances_q = np.sum(demand_appliances_q, axis=0)
+        power_el_app_q = np.sum(demand_appliances_q, axis=0)
 
-        total_demand_q = total_demand_appliances_q + total_demand_lighting_q
+        power_el_total_q = power_el_app_q + power_el_light_q
 
-        return (power_el_total, power_el_light, power_el_app, total_demand_q,
-                total_demand_lighting_q,
-                total_demand_appliances_q)
+        return (power_el_total, power_el_light, power_el_app, power_el_total_q,
+                power_el_light_q,
+                power_el_app_q)

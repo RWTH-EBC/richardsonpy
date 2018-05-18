@@ -308,6 +308,11 @@ def date_part(day):
 def run_application_simulation(occupancy_distribution, app, activity_statistics, iMonth=1):
     """
     Direct portation from original Richardson file
+
+    Returns
+    -------
+    tup_res : tuple
+        Results tuple (result, result_q)
     """
     
     # Define the relative monthly temperatures
@@ -481,4 +486,4 @@ def run_application_simulation(occupancy_distribution, app, activity_statistics,
             result.append(consumption)
             result_q.append(consumption_q)
     
-    return result, result_q
+    return (result, result_q)
