@@ -17,11 +17,19 @@ class Test_eload_with_heat_dev():
         #  Total number of occupants in apartment
         nb_occ = 5
 
+        timestep = 60
+
         #  Generate occupancy object
         occ_obj = occ.Occupancy(number_occupants=nb_occ)
 
         #  Get radiation
         (q_direct, q_diffuse) = loadrad.get_rad_from_try_path()
+
+        #  Convert 3600 s timestep to given timestep
+        q_direct = cr.change_resolution(q_direct, old_res=3600,
+                                        new_res=timestep)
+        q_diffuse = cr.change_resolution(q_diffuse, old_res=3600,
+                                         new_res=timestep)
 
         #  Generate stochastic electric power object
         el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
@@ -32,4 +40,5 @@ class Test_eload_with_heat_dev():
                                          prev_heat_dev=True,
                                          randomize_appliances=False,
                                          light_config=2,
-                                         season_light_mod=True)
+                                         season_light_mod=True,
+                                         timestep=timestep)

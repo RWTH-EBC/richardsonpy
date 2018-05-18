@@ -5,8 +5,8 @@ Created on Thu May 21 21:24:23 2015
 
 @author: Thomas
 """
-
 from __future__ import division
+
 import random
 import math
 import csv

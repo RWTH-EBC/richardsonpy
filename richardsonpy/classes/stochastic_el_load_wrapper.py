@@ -5,8 +5,8 @@ Created on Tue Jul 21 14:09:28 2015
 
 @author: tsz
 """
-
 from __future__ import division
+
 import os
 import numpy as np
 import richardsonpy.classes.lighting as lighting_model
@@ -69,8 +69,10 @@ class ElectricityProfile(object):
                 break
         return int(i + 1)
 
-    def demands(self, irradiation, weekend, day, occupancy):
+    def power_sim(self, irradiation, weekend, day, occupancy):
         """
+        Calculate electric power for lighting and appliance usage.
+
         Parameters
         ----------
         irradiation : Array-like
@@ -82,13 +84,27 @@ class ElectricityProfile(object):
             Day of the (computation) year.
         occupancy : Array-like
             Occupancy for one day (10 minute resolution)
+
+        Returns
+        -------
+        tup_res : tuple (of arrays)
+            Results tuple (power_el_total, power_el_light,
+            power_el_app)
+            power_el_total : array
+                Array holding total el. power values in Watt
+            power_el_light : array
+                Array holding el. power values for light usage in Watt
+            power_el_app : array
+                Array holding el. power values for appliance usage in Watt
         """
         month = self._get_month(day)
 
         # Lighting
-        fun = lighting_model.run_lighting_simulation
-        demand_lighting = fun(occupancy, self.lightbulbs, irradiation,
-                              self.lighting_config)
+        demand_lighting = lighting_model.run_lighting_simulation(
+            vOccupancyArray=occupancy,
+            vBulbArray=self.lightbulbs,
+            vIrradianceArray=irradiation,
+            light_mod_config=self.lighting_config)
 
         # Appliances
         fun = appliance_model.run_application_simulation
@@ -97,11 +113,10 @@ class ElectricityProfile(object):
         demand_appliances, demand_appliances_q = fun(occupancy, self.appliances, activity_statistics, month)
         # active demand and reactive demand (q)
 
-        total_demand_lighting = np.sum(demand_lighting, axis=0)
+        power_el_light = np.sum(demand_lighting, axis=0)
+        power_el_app = np.sum(demand_appliances, axis=0)
 
-        total_demand_appliances = np.sum(demand_appliances, axis=0)
-
-        total_demand = total_demand_appliances + total_demand_lighting
+        power_el_total = power_el_app + power_el_light
 
         # reactive demand (q) for appliances and lightning and total
         total_demand_lighting_q = np.sum(demand_lighting, axis=0) * np.tan(np.arccos(0.97))  # PF for lightning 0.97
