@@ -4,8 +4,8 @@
 Occupancy class. Holds information about number of occupants and their
 occupancy profile.
 """
-
 from __future__ import division
+
 import os
 import numpy as np
 import random
