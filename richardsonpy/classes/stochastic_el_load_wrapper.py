@@ -88,8 +88,10 @@ class ElectricityProfile(object):
         Returns
         -------
         tup_res : tuple (of arrays)
-            Results tuple (power_el_total, power_el_light,
-            power_el_app)
+            Results tuple (power_el_total, power_el_light, power_el_app,
+                total_demand_q,
+                total_demand_lighting_q,
+                total_demand_appliances_q)
             power_el_total : array
                 Array holding total el. power values in Watt
             power_el_light : array
@@ -125,5 +127,6 @@ class ElectricityProfile(object):
 
         total_demand_q = total_demand_appliances_q + total_demand_lighting_q
 
-        return (total_demand, total_demand_lighting, total_demand_appliances, total_demand_q, total_demand_lighting_q,
+        return (power_el_total, power_el_light, power_el_app, total_demand_q,
+                total_demand_lighting_q,
                 total_demand_appliances_q)

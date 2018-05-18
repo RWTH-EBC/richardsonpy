@@ -198,7 +198,7 @@ class ElectricLoad(object):
         self.app_load_q = None  # Appliance power profile in W
         self.loadcurve_q = None  # El. reactive power profile (Q) in VAr
 
-		self._timestep_rich = 60  # in seconds
+        self._timestep_rich = 60  # in seconds
 
         if calc_profile:
             self.calc_stoch_el_profile(q_direct=q_direct, q_diffuse=q_diffuse,
@@ -325,7 +325,7 @@ class ElectricLoad(object):
         light_load = []
         app_load = []
 
-		demand_q = []
+        demand_q = []
         light_load_q = []
         app_load_q = []
 

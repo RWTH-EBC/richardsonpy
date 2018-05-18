@@ -72,12 +72,12 @@ def example_stoch_el_load(do_plot=False):
 
         fig.add_subplot(212)
         plt.plot(time_array, el_load_obj.loadcurve[0:timesteps], label='El. load P')
-		plt.plot(time_array, el_load_obj.loadcurve[0:timesteps], label='El. load Q')
+        plt.plot(time_array, el_load_obj.loadcurve[0:timesteps], label='El. load Q')
         plt.xlabel('Timestep in hours')
         plt.ylabel('Electric power in W')
         plt.xlim([0, 24])
 
-		plt.legend()
+        plt.legend()
         plt.tight_layout()
         plt.show()
         plt.close()
