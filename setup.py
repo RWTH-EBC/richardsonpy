@@ -33,7 +33,6 @@ setup(name='richardsonpy',
       url='https://github.com/RWTH-EBC/richardsonpy',
       author='RWTH Aachen University, E.ON Energy Research Center, '
              'Institute of Energy Efficient Buildings and Indoor Climate',
-      author_email='ebc-teaser@eonerc.rwth-aachen.de',
       license='GPL-3.0',
       packages=['richardsonpy'],
       install_requires=['numpy', 'matplotlib', 'xlrd'])
