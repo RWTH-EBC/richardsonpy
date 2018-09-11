@@ -16,7 +16,8 @@ from collections import namedtuple
 class Appliances:
     """ Class to hold all relevant variables:
         Appliances.data -> data stored in the csv input file
-        Appliances.calib_cycles -> calibrated cycles (calibration_factor*base_cycles)
+        Appliances.calib_cycles -> calibrated cycles
+        (calibration_factor*base_cycles)
 
     row     row_float       meaning
     0       not imported    Orientation (Cold, Cooking, Consumer electronics)
@@ -28,7 +29,8 @@ class Appliances:
     6       4               Mean cycle power
     7       5               Standby power
     8       6               Restart delay
-    9       7               Occupancy dependent (1 for yes, 0 for no) - device is only active if user is at home
+    9       7               Occupancy dependent (1 for yes, 0 for no) - device
+    is only active if user is at home
     10      8               Activity use profile (Number code, see below ***)
     11      9               Activity probability
     12      10              Appliance mean power factor
@@ -45,9 +47,76 @@ class Appliances:
     8 - CUSTOM (not further described in original tool)
     """
 
+    def __init__(self,
+                 filename,
+                 annual_consumption=3200,
+                 mean_active_occupancy=0.459,
+                 randomize_appliances=False,
+                 max_iter=2,
+                 prev_heat_dev=False):
+        """
+        Constructor of appliance object
+
+        Parameters
+        ----------
+        filename : str
+            Path to appliance input file (Appliances.csv)
+        annual_consumption : float, optional
+            Annual el. consumption in kWh (default: 3200)
+        mean_active_occupancy : float
+
+        randomize_appliances : bool, optional
+            Defines, if appliances should be chosen randomly (default: False)
+            If False, uses default settings of Appliances.csv
+        max_iter : int
+
+        prev_heat_dev : bool, optional
+            Defines, if heating devices should be prevented within chosen
+            appliances (default: False). If set to True, DESWH, E-INST,
+            Electric shower, Storage heaters and Other electric space heating
+            are set to zero.
+        """
+        self.load_appliances(filename)
+
+        if randomize_appliances:
+            self.randomize()
+
+        if prev_heat_dev:
+            #  Prevent heating devices for water heating and electrical
+            #  space heating
+            for i in range(len(self.data)):  # Loop over app. lists
+                if i in [29, 30, 31, 32, 33]:  # Idx of heating app.
+                    self.data[i][0] = 0  # Set to zero
+
+        Bound = namedtuple("bound", ["calibration_factor", "annual_demand"])
+
+        lb = Bound(0,
+                   self.estimate_annual_consumption(0, mean_active_occupancy))
+        ub = Bound(100, self.estimate_annual_consumption(100,
+                                                         mean_active_occupancy))
+
+        iteration = 0
+        while iteration < max_iter:
+            calib_factor = lb[0] + (ub[0] - lb[0]) * (
+                    annual_consumption - lb[1]) / (ub[1] - lb[1])
+            calib_demand = self.estimate_annual_consumption(calib_factor,
+                                                            mean_active_occupancy)
+
+            if calib_demand > annual_consumption:
+                ub = Bound(calib_factor, calib_demand)
+            else:
+                lb = Bound(calib_factor, calib_demand)
+
+            iteration += 1
+
     def load_appliances(self, filename):
         """
-        Load the installed appliances
+        Load appliance data file and save results to self.data
+
+        Parameters
+        ----------
+        filename : str
+            Path to appliance input file (Appliances.csv)
         """
         result = []
         try:
@@ -75,6 +144,7 @@ class Appliances:
 
     def randomize(self):
         """
+        Randomize installed appliances (0 - Not installed; 1 - installed)
         """
         for app in self.data:
             if random.random() <= app[1]:
@@ -84,6 +154,19 @@ class Appliances:
 
     def estimate_annual_consumption(self, calibration_factor=1,
                                     mean_active_occupancy=0.459):
+        """
+        Estimate annual energy consumption
+
+        Parameters
+        ----------
+        calibration_factor : float
+
+        mean_active_occupancy : float
+
+        Returns
+        -------
+        sum(energy_total_ownership)
+        """
         num_appliances = len(self.data)
 
         self.calib_cycles = [rows[2] * calibration_factor for rows in
@@ -126,74 +209,34 @@ class Appliances:
 
         return sum(energy_total_ownership)
 
-    def __init__(self,
-                 filename,
-                 annual_consumption=3200,
-                 mean_active_occupancy=0.459,
-                 randomize_appliances=False,
-                 max_iter=2, prev_heat_dev=False):
-        """
-        Constructor of appliance object
-
-        Parameters
-        ----------
-        filename : str
-            Path to appliance input file (Appliances.csv)
-        annual_consumption : float, optional
-            Annual el. consumption in kWh (default: 3200)
-        mean_active_occupancy : float
-
-        randomize_appliances : bool, optional
-            Defines, if appliances should be chosen randomly (default: False)
-            If False, uses default settings of Appliances.csv
-        max_iter :
-        prev_heat_dev : bool, optional
-            Defines, if heating devices should be prevented within chosen
-            appliances (default: False). If set to True, DESWH, E-INST,
-            Electric shower, Storage heaters and Other electric space heating
-            are set to zero.
-        """
-        self.load_appliances(filename)
-
-        if randomize_appliances:
-            self.randomize()
-
-        if prev_heat_dev:
-            #  Prevent heating devices for water heating and electrical
-            #  space heating
-            for i in range(len(self.data)):  # Loop over app. lists
-                if i in [29, 30, 31, 32, 33]:  # Idx of heating app.
-                    self.data[i][0] = 0  # Set to zero
-
-        Bound = namedtuple("bound", ["calibration_factor", "annual_demand"])
-
-        lb = Bound(0,
-                   self.estimate_annual_consumption(0, mean_active_occupancy))
-        ub = Bound(100, self.estimate_annual_consumption(100,
-                                                         mean_active_occupancy))
-
-        iteration = 0
-        while iteration < max_iter:
-            calib_factor = lb[0] + (ub[0] - lb[0]) * (
-                        annual_consumption - lb[1]) / (ub[1] - lb[1])
-            calib_demand = self.estimate_annual_consumption(calib_factor,
-                                                            mean_active_occupancy)
-
-            if calib_demand > annual_consumption:
-                ub = Bound(calib_factor, calib_demand)
-            else:
-                lb = Bound(calib_factor, calib_demand)
-
-            iteration += 1
-
 
 def get_power_usage(iCycleTimeLeft, sApplianceType, iStandbyPower,
                     iRatedPower):
+    """
+
+    Parameters
+    ----------
+    iCycleTimeLeft :
+
+    sApplianceType :
+
+    iStandbyPower :
+
+    iRatedPower :
+
+
+    Returns
+    -------
+    result :
+
+    """
     # Set the return power to the rated power
     result = iRatedPower
 
-    # Some appliances have a custom (variable) power profile depending on the time left
-    if sApplianceType == 26 or sApplianceType == 27:  # "WASHING_MACHINE", "WASHER_DRYER"
+    # Some appliances have a custom (variable) power profile depending on
+    # the time left
+    if sApplianceType == 26 or sApplianceType == 27:  # "WASHING_MACHINE",
+        # "WASHER_DRYER"
         # Calculate the washing cycle time        
         if sApplianceType == 26:
             iTotalCycleTime = 138
@@ -201,7 +244,8 @@ def get_power_usage(iCycleTimeLeft, sApplianceType, iStandbyPower,
             iTotalCycleTime = 198
 
         # This is an example power profile for an example washing machine
-        # This simplistic model is based upon data from personal communication with a major washing maching manufacturer
+        # This simplistic model is based upon data from personal communication
+        # with a major washing maching manufacturer
         temp = iTotalCycleTime - iCycleTimeLeft + 1
 
         if temp > 0 and temp <= 8:
@@ -237,6 +281,20 @@ def get_power_usage(iCycleTimeLeft, sApplianceType, iStandbyPower,
 
 
 def cycle_length(iMeanCycleLength, sApplianceType):
+    """
+
+    Parameters
+    ----------
+    iMeanCycleLength :
+
+    sApplianceType :
+
+
+    Returns
+    -------
+    result :
+
+    """
     # Set the value to that provided in the configuration
     result = iMeanCycleLength
 
@@ -256,6 +314,21 @@ def cycle_length(iMeanCycleLength, sApplianceType):
 
 def start_appliance(iRestartDelay, iCycleTimeLeft, sApplianceType,
                     iStandbyPower, iRatedPower, iMeanCycleLength):
+    """
+
+    Parameters
+    ----------
+    iRestartDelay
+    iCycleTimeLeft
+    sApplianceType
+    iStandbyPower
+    iRatedPower
+    iMeanCycleLength
+
+    Returns
+    -------
+    [iCycleTimeLeft, iPower, iRestartDelayTimeLeft]
+    """
     # Determine how long this appliance is going to be on for
     iCycleTimeLeft = cycle_length(iMeanCycleLength, sApplianceType)
 
@@ -273,17 +346,38 @@ def start_appliance(iRestartDelay, iCycleTimeLeft, sApplianceType,
 
 
 def get_length_months():
+    """
+    Get number of days per month no switching year!)
+
+    Returns
+    -------
+    list_days_per_month : list (of ints)
+        List holdings number of days per month (no switching year!)
+    """
     # JAN FEB MRZ APR MAI JUN JUL AUG SEP OKT NOV DEZ
     return [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
 def date_add(number, date):
-    """ 
+    """
     Problem: Usage of a VBA built-in function called DateAdd.
-    
-    According to the VBA manual, this function adds a _number_ of days to the given _date_
-    The return value is (in the Richardson tool) definded as a "day"-type. Therefore, we return an integer.
+
+    According to the VBA manual, this function adds a _number_ of days to
+    the given _date_
+    The return value is (in the Richardson tool) definded as a "day"-type.
+    Therefore, we return an integer.
     Parameter date a list with the following meaning: [day, month, year]
+
+    Parameters
+    ----------
+    number :
+
+    date :
+
+
+    Returns
+    -------
+    result :
     """
     length_months = get_length_months()
 
@@ -305,11 +399,23 @@ def date_add(number, date):
 def date_part(day):
     """
     Problem: Richardson tool uses a VBA built-in function called DatePart.
-    
-    According to the VBA manual, this function adds a _number_ of days to the given _date_
-    The return value is (in the Richardson tool) definded as a "month"-type. Therefore, we return an integer.
-        If the return month represents January, we return 1 (NOT 0 - as lists usuall begin with)
-    Parameter day represents the integer value of the corresponding date (January first -> 1, December 31st -> 365)
+
+    According to the VBA manual, this function adds a _number_ of days to the
+    given _date_
+    The return value is (in the Richardson tool) definded as a "month"-type.
+    Therefore, we return an integer.
+        If the return month represents January, we return 1
+        (NOT 0 - as lists usuall begin with)
+    Parameter day represents the integer value of the corresponding date
+    (January first -> 1, December 31st -> 365)
+
+    Parameters
+    ----------
+    day
+
+    Returns
+    -------
+    result
     """
     length_months = get_length_months()
 
@@ -326,21 +432,35 @@ def run_application_simulation(occupancy_distribution, app,
                                activity_statistics, iMonth=1):
     """
     Direct portation from original Richardson file
+
+    Parameters
+    ----------
+    occupancy_distribution
+    app
+    activity_statistics
+    iMonth
+
+    Returns
+    -------
+    result
     """
 
     # Define the relative monthly temperatures
-    # Data derived from MetOffice temperature data for the Midlands in 2007 (http://www.metoffice.gov.uk/climate/uk/2007/) Crown Copyright
+    # Data derived from MetOffice temperature data for the Midlands in 2007
+    # (http://www.metoffice.gov.uk/climate/uk/2007/) Crown Copyright
     oMonthlyRelativeTemperatureModifier = [1.63, 1.821, 1.595, 0.867, 0.763,
                                            0.191, 0.156, 0.087, 0.399, 0.936,
                                            1.561, 1.994]
 
-    # Array for storing the results is initialized (in VBA, this is already done with the right dimensions)
+    # Array for storing the results is initialized (in VBA, this is already
+    # done with the right dimensions)
     result = []
 
     # Remake of the Excel-Sheet that stores the appliances' data:
     #    app = Appliances(path+'\\HouseSpecification\\', 'Appliances.csv')
 
-    #    # Not in the original Richardson Tool: Generate a new distribution of the installed appliances:
+    #    # Not in the original Richardson Tool: Generate a new distribution
+    # of the installed appliances:
     #    if redistribute == True:
     #        for i in range(33):     # For all appliances:
     #            if random.random() < app.data[i][1]:
@@ -355,14 +475,18 @@ def run_application_simulation(occupancy_distribution, app,
         iCycleTimeLeft = 0
         iRestartDelayTimeLeft = 0
 
-        # skip sApplianceType. This is not exported in the csv file. The few times it is needed, we will "improvise" by using the iterator "i"
+        # skip sApplianceType. This is not exported in the csv file.
+        # The few times it is needed, we will "improvise" by using the
+        # iterator "i"
         iMeanCycleLength = app.data[i][3]
         iCyclesPerYear = app.calib_cycles[i]
         iStandbyPower = app.data[i][5]
         iRatedPower = app.data[i][4]
         dCalibration = app.calib_scalar[i]
-        # dOwnership = app.data[i][1]  -- Part of the Richardson tool, but never used during the computation ...
-        # iTargetAveragekWhYear = app.comp_energy_total[i]  -- Part of the Richardson tool, but never used during the computation ...
+        # dOwnership = app.data[i][1]  -- Part of the Richardson tool, but
+        # never used during the computation ...
+        # iTargetAveragekWhYear = app.comp_energy_total[i]  -- Part of the
+        # Richardson tool, but never used during the computation ...
         sUseProfile = app.data[i][8]
         iRestartDelay = app.data[i][6]
         bHasAppliance = app.data[i][0]
@@ -370,17 +494,21 @@ def run_application_simulation(occupancy_distribution, app,
         # Formatting the output --- not necessary
 
         # Check if this appliance is assigned to this dwelling
-        if bHasAppliance == 0:  # Device is NOT installed in the current building
+        if bHasAppliance == 0:  # Device is NOT installed in the current
+            # building
             no_consumption = []
             for j in range(24 * 60):  # 24 hours with 60 minutes each
                 no_consumption.append(0)
             result.append(no_consumption)
         else:  # Device is installed in the current building:
 
-            # Randomly delay the start of appliances that have a restart delay (e.g. cold appliances with more regular intervals)
-            iRestartDelayTimeLeft = random.random() * iRestartDelay * 2  # Weighting is 2 just to provide some diversity
+            # Randomly delay the start of appliances that have a restart
+            # delay (e.g. cold appliances with more regular intervals)
+            iRestartDelayTimeLeft = random.random() * iRestartDelay * 2
+            # Weighting is 2 just to provide some diversity
 
-            # Make the rated power variable over a normal distribution to provide some variation
+            # Make the rated power variable over a normal distribution to
+            # provide some variation
             iRatedPower = random.gauss(iRatedPower, iRatedPower / 10)
 
             consumption = []
@@ -405,33 +533,48 @@ def run_application_simulation(occupancy_distribution, app,
                 # iActiveOccupants
                 # sUseProfile
 
-                # If this appliance is off having completed a cycle (ie. a restart delay)
+                # If this appliance is off having completed a cycle
+                # (ie. a restart delay)
                 if (iCycleTimeLeft <= 0) and (iRestartDelayTimeLeft > 0):
                     # Decrement the cycle time left
                     iRestartDelayTimeLeft = iRestartDelayTimeLeft - 1
 
                 elif iCycleTimeLeft <= 0:  # Else if this appliance is off
-                    # There must be active occupants, or the profile must not depend on occupancy for a start event to occur
-                    # If (iActiveOccupants > 0 And sUseProfile <> "CUSTOM") Or (sUseProfile = "LEVEL") Then
+                    # There must be active occupants, or the profile must
+                    # not depend on occupancy for a start event to occur
+                    # If (iActiveOccupants > 0 And sUseProfile <> "CUSTOM")
+                    # Or (sUseProfile = "LEVEL") Then
                     if (iActiveOccupants > 0 and sUseProfile != 8) or (
                             sUseProfile == 7):
-                        # Variable to store the event probability (default to 1)
+                        # Variable to store the event probability
+                        # (default to 1)
                         dActivityProbability = 1
 
-                        # For appliances that depend on activity profiles and is not a custom profile ...
-                        if sUseProfile < 6:  # neither ActiveOCC nor Level nor Custom
-                            # Get the probability for this activity profile for this time step
-                            # Five activity slots (sUseProfile) for each occupant number
-                            # Second index: 0: occupant number, 1: activity code (sUseProfile), 2: Time from 00_00 until 00_10, 3: Time from 00_10 until 00_20 ...
+                        # For appliances that depend on activity profiles
+                        # and is not a custom profile ...
+                        if sUseProfile < 6:  # neither ActiveOCC nor Level
+                            # nor Custom
+                            # Get the probability for this activity profile
+                            # for this time step
+                            # Five activity slots (sUseProfile) for each
+                            # occupant number
+                            # Second index: 0: occupant number,
+                            # 1: activity code (sUseProfile),
+                            # 2: Time from 00_00 until 00_10,
+                            # 3: Time from 00_10 until 00_20 ...
                             dActivityProbability = activity_statistics[
                                 int(5 * iActiveOccupants + sUseProfile)][
                                 iTenMinuteCount + 2]
 
-                        # For electric space heaters ... (excluding night storage heaters)
-                        elif i == 31:  # (sApplianceType = "ELEC_SPACE_HEATING")
-                            # If this appliance is an electric space heater, then the activity probability is a function of the month of the year
+                        # For electric space heaters ... (excluding night
+                        # storage heaters)
+                        elif i == 31:  #
+                            # (sApplianceType = "ELEC_SPACE_HEATING")
+                            # If this appliance is an electric space heater,
+                            # then the activity probability is a function
+                            # of the month of the year
                             dActivityProbability = \
-                            oMonthlyRelativeTemperatureModifier[iMonth - 1]
+                                oMonthlyRelativeTemperatureModifier[iMonth - 1]
 
                         # Check the probability of a start event
                         if random.random() < (
@@ -442,27 +585,36 @@ def run_application_simulation(occupancy_distribution, app,
                                 iRestartDelay, iCycleTimeLeft, i,
                                 iStandbyPower, iRatedPower, iMeanCycleLength)
 
-                    # Custom appliance handler: storage heaters have a simple representation
-                elif sUseProfile == 8:  # Notice: This clause is overdefined in the original Richardson tool... I simplified it!
-                    # The number of cycles (one per day) set out in the calibration sheet
+                    # Custom appliance handler: storage heaters have a simple
+                    # representation
+                elif sUseProfile == 8:  # Notice: This clause is overdefined
+                    # in the original Richardson tool... I simplified it!
+                    # The number of cycles (one per day) set out in the
+                    # calibration sheet
                     # is used to determine whether the storage heater is used
 
-                    # This model does not account for the changes in the Economy 7 time
+                    # This model does not account for the changes in the
+                    # Economy 7 time
                     # It assumes that the time starts at 00:30 each day
                     if (iTenMinuteCount == 4):  # ie. 00:30 - 00:40
                         # Assume January 14th is the coldest day of the year
                         oDate = [14, 1, 1997]  # VBA: oDate = #1/14/1997#
 
-                        # Get the month and day when the storage heaters are turned on and off, using the number of cycles per year
+                        # Get the month and day when the storage heaters are
+                        # turned on and off, using the number of cycles per
+                        # year
                         oDateOff = date_add(round(iCyclesPerYear / 2), oDate)
                         oDateOn = date_add(-round(iCyclesPerYear / 2), oDate)
                         iMonthOff = date_part(oDateOff)
                         iMonthOn = date_part(oDateOn)
 
-                        # If this is a month in which the appliance is turned on of off
+                        # If this is a month in which the appliance is turned
+                        # on of off
                         if (iMonth == iMonthOff) or (iMonth == iMonthOn):
-                            # Pick a 50% chance since this month has only a month of year resolution
-                            dProbability = 0.5 / 10  # (since there are 10 minutes in this period)
+                            # Pick a 50% chance since this month has only a
+                            # month of year resolution
+                            dProbability = 0.5 / 10  # (since there are 10
+                            # minutes in this period)
                         elif (iMonth > iMonthOff) and (iMonth < iMonthOn):
                             # The appliance is not used in summer
                             dProbability = 0
@@ -479,14 +631,20 @@ def run_application_simulation(occupancy_distribution, app,
                                 iStandbyPower, iRatedPower, iMeanCycleLength)
 
 
-                else:  # The appliance is on - if the occupants become inactive, switch off the appliance
+                else:  # The appliance is on - if the occupants become
+                    # inactive, switch off the appliance
                     if (iActiveOccupants == 0) and (sUseProfile != 7) and (
                             sUseProfile != 2) and (sUseProfile != 8):
-                        # (iActiveOccupants = 0) and (sUseProfile <> "LEVEL") and (sUseProfile <> "ACT_LAUNDRY") and (sUseProfile <> "CUSTOM"):
+                        # (iActiveOccupants = 0) and (sUseProfile <> "LEVEL")
+                        # and (sUseProfile <> "ACT_LAUNDRY") and
+                        # (sUseProfile <> "CUSTOM"):
 
-                        # Do nothing. The activity will be completed upon the return of the active occupancy.
-                        # Note that LEVEL means that the appliance use is not related to active occupancy.
-                        # Note also that laundry appliances do not switch off upon a transition to inactive occupancy.
+                        # Do nothing. The activity will be completed upon the
+                        # return of the active occupancy.
+                        # Note that LEVEL means that the appliance use is not
+                        # related to active occupancy.
+                        # Note also that laundry appliances do not switch off
+                        # upon a transition to inactive occupancy.
                         pass
                     else:
                         # Set the power
