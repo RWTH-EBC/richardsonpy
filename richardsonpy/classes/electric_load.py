@@ -177,7 +177,7 @@ class ElectricLoad(object):
         assert timestep > 0
 
         assert total_nb_occ > 0
-        if total_nb_occ > 5:
+        if total_nb_occ > 5:  # pragma: no cover
             msg = 'Implementation of probability matrices does only account' \
                   ' for apartments with up to 5 persons per apartment. ' \
                   'Please select a lower number of occupants!'
@@ -328,7 +328,7 @@ class ElectricLoad(object):
         t_irr_365 = int(365 * 3600 * 24 / len(irradiance))
         t_irr_366 = int(366 * 3600 * 24 / len(irradiance))
 
-        if timestep != t_irr_365 and timestep != t_irr_366:
+        if timestep != t_irr_365 and timestep != t_irr_366:  # pragma: no cover
             msg = 'Time discretization of irradiance is different from ' \
                   'timestep ' \
                   + str(timestep) \
