@@ -15,7 +15,7 @@ import richardsonpy.functions.change_resolution as cr
 import richardsonpy.functions.load_radiation as loadrad
 
 
-def main():
+def main():  #  pragma: no cover
     #  Total number of occupants in apartment
     nb_occ = 3
 
