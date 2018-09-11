@@ -12,16 +12,11 @@ import math
 import csv
 
 
-# The Excel Sheet has a fairly complicated configuration file (which I suppose most people have ignored so far)
-# This class provides the standard inputs. If required, other values can be entered.
+# The Excel Sheet has a fairly complicated configuration file
+# (which I suppose most people have ignored so far)
+# This class provides the standard inputs.
+# If required, other values can be entered.
 class LightingModelConfiguration():
-
-    def relative_bulb_use_weighting(self):
-        """ This represents the concept that some bulbs are used more frequently than others in a house.
-
-            The return value is [-ln(random_variable)]
-        """
-        return -math.log(random.random())
 
     def __init__(self,
                  external_irradiance_threshold=[60, 10],
@@ -34,26 +29,66 @@ class LightingModelConfiguration():
                                       2.09437086092715],
                  lighting_event_lower_value=[1, 2, 3, 5, 9, 17, 28, 50, 92],
                  lighting_event_upper_value=[1, 2, 4, 8, 16, 27, 49, 91, 259]):
+        """
+        Constructor of lighting class object instance
+
+        Parameters
+        ----------
+        external_irradiance_threshold : list
+
+        calibration_scalar : float
+
+        effective_occupancy : list (of floats)
+
+        lighting_event_lower_value : list (of ints)
+
+        lighting_event_upper_value : list (of ints)
+        """
+
         # House external global irradiance threshold
         self.ext_irr_threshold_mean = external_irradiance_threshold[0]
         self.ext_irr_threshold_std_dev = external_irradiance_threshold[1]
 
-        # This calibration scaler is used to calibrate the model to so that it provides 
+        # This calibration scaler is used to calibrate the model to so that
+        # it provides
         # a particular average output over a large number of runs.
         self.calib_scalar = calibration_scalar
 
         # Effective occupancy represents the sharing of light use.
         self.eff_occupancy = effective_occupancy
 
-        # This model defines how long a bulb will stay on for, if a switch-on event occurs.
+        # This model defines how long a bulb will stay on for, if a
+        # switch-on event occurs.
         self.light_event_lower_value = lighting_event_lower_value
         self.light_event_upper_value = lighting_event_upper_value
+
+    def relative_bulb_use_weighting(self):
+        """
+        This represents the concept that some bulbs are used more
+        frequently than others in a house.
+
+        The return value is [-ln(random_variable)]
+
+        Returns
+        -------
+        -math.log(random.random())
+        """
+        return -math.log(random.random())
 
 
 def load_lighting_profile(filename, index=0):
     """
     Load the installed light bulbs
     The tool already provided a sheet with 100 sample bulb configurations.
+
+    Parameters
+    ----------
+    filename
+    index
+
+    Returns
+    -------
+    read_in[index]
     """
     read_in = []
 
@@ -89,6 +124,19 @@ def load_lighting_profile(filename, index=0):
 
 def run_lighting_simulation(vOccupancyArray, vBulbArray, vIrradianceArray,
                             light_mod_config):
+    """
+
+    Parameters
+    ----------
+    vOccupancyArray
+    vBulbArray
+    vIrradianceArray
+    light_mod_config
+
+    Returns
+    -------
+    result
+    """
     # Instantiate LightingModelConfiguration (with standard values)
     #    light_mod_config = LightingModelConfiguration()
 
@@ -133,7 +181,7 @@ def run_lighting_simulation(vOccupancyArray, vBulbArray, vIrradianceArray,
             # ie. Insuffient irradiance and at least one active occupant
             # There is a 5% chance of switch on event if the irradiance is above the threshold
             bLowIrradiance = ((iIrradiance < iIrradianceThreshold) or (
-                        random.random() < 0.05))
+                    random.random() < 0.05))
 
             # Get the effective occupancy for this number of active occupants to allow for sharing
             fEffectiveOccupancy = light_mod_config.eff_occupancy[
@@ -158,16 +206,16 @@ def run_lighting_simulation(vOccupancyArray, vBulbArray, vIrradianceArray,
                     if r1 < cml:
                         # Get the durations
                         iLowerDuration = \
-                        light_mod_config.light_event_lower_value[j - 1]
+                            light_mod_config.light_event_lower_value[j - 1]
                         iUpperDuration = \
-                        light_mod_config.light_event_upper_value[j - 1]
+                            light_mod_config.light_event_upper_value[j - 1]
 
                         # Get another random number
                         r2 = random.random()
 
                         # Guess a duration in this range
                         iLightDuration = (r2 * (
-                                    iUpperDuration - iLowerDuration)) + iLowerDuration
+                                iUpperDuration - iLowerDuration)) + iLowerDuration
 
                         # Exit the loop
                         break

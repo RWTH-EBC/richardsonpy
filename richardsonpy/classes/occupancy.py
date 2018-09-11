@@ -135,6 +135,14 @@ class Occupancy(object):
     def _get_start_state(self, start_probabilities):
         """
         Determine the active occupancy start state.
+
+        Parameters
+        ----------
+        start_probabilities
+
+        Returns
+        -------
+        result
         """
         # Pick a random number to determine the start state
         f_rand = random.random()
@@ -160,6 +168,14 @@ class Occupancy(object):
 
     def _get_occupancy(self, weekend):
         """
+
+        Parameters
+        ----------
+        weekend
+
+        Returns
+        -------
+
         """
         # Select appropriate transition probability matrix
         tpm = self.tpm[self.number_occupants, self.type_weekday[weekend]]
