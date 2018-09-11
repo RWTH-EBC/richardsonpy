@@ -24,31 +24,31 @@ def all_states(tpm, initial_state):
     current_state = initial_state
 
     i = 1
-    
+
     while i <= 144:
-        
+
         # Get a new random number
         f_rand = random.random()
         # Reset cumulative probability count
         f_cumulative_p = 0
-        
+
         # Determine the row for this state
-        iRow = 7 * (i-1) + current_state
-        
+        iRow = 7 * (i - 1) + current_state
+
         # Loop construction
         j = 0
         found = False
-        
-       # while (not found and j <= 7):
+
+        # while (not found and j <= 7):
         while (not found and j <= 6):
-            f_cumulative_p = f_cumulative_p + tpm[iRow][j+2]
-            if (f_rand < f_cumulative_p or i == len(tpm[iRow])-1):
+            f_cumulative_p = f_cumulative_p + tpm[iRow][j + 2]
+            if (f_rand < f_cumulative_p or i == len(tpm[iRow]) - 1):
                 current_state = j
                 found = True
             j += 1
-        
+
         # Store next state
         result.append(current_state)
-        
+
         i += 1
-    return result    
+    return result

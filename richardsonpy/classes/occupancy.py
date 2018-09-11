@@ -132,7 +132,6 @@ class Occupancy(object):
         occupancy = np.array(occupancy)
         self.occupancy = np.reshape(occupancy, occupancy.size)
 
-
     def _get_start_state(self, start_probabilities):
         """
         Determine the active occupancy start state.
