@@ -20,9 +20,16 @@ def exampe_occupancy(do_plot=False):
     print('Maximum number of active occupants:')
     print(np.max(occupancy_profile))
 
+    timestep = 600
+    #  Generate time array for plotting
+    timesteps = int(24 * 3600 / timestep)  # Number of timesteps per day
+    time_array = np.arange(0, timesteps * timestep, timestep) / 3600
+
     if do_plot:
         plt.figure()
-        plt.plot(occupancy_profile[:200])
+        plt.plot(time_array[:144],
+                 occupancy_profile[:144])
+        plt.xlabel('Time in hours')
         plt.ylabel('Number of active occupants')
         plt.show()
 
