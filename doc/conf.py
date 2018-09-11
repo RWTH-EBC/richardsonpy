@@ -34,7 +34,11 @@
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.coverage',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages',
+	'sphinx.ext.napoleon'#,  # Add napoleon to the extensions list
+	#'sphinxcontrib.bibtex'
+	]  
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -171,9 +175,6 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-# Add napoleon to the extensions list
-extensions = ['sphinx.ext.napoleon']
 
 # Napoleon settings
 napoleon_google_docstring = False
