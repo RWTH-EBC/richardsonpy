@@ -12,7 +12,13 @@ and
 Department of Electronic & Electrical Engineering, University of Strathclyde,
 UK
 
-see: https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
+see: 
+
+https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
+
+and
+
+https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786
 
 Python version provided by:
 RWTH Aachen University, E.ON Energy Research Center,

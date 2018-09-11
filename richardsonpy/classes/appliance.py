@@ -64,12 +64,13 @@ class Appliances:
         annual_consumption : float, optional
             Annual el. consumption in kWh (default: 3200)
         mean_active_occupancy : float
-
+            The overall average active occupancy for a dwelling
+            (default: 0.459)
         randomize_appliances : bool, optional
             Defines, if appliances should be chosen randomly (default: False)
             If False, uses default settings of Appliances.csv
         max_iter : int
-
+            Maximum number of iterations (default: 2)
         prev_heat_dev : bool, optional
             Defines, if heating devices should be prevented within chosen
             appliances (default: False). If set to True, DESWH, E-INST,
@@ -160,8 +161,13 @@ class Appliances:
         Parameters
         ----------
         calibration_factor : float
-
+            Original description from Richardson Excel:
+            (Note: Use Solver to vary this value such that the average
+            total in cell AA47 is set to the required value.)
+            (default: 1)
         mean_active_occupancy : float
+            The overall average active occupancy for a dwelling
+            (default: 0.459)
 
         Returns
         -------
@@ -312,14 +318,13 @@ def cycle_length(iMeanCycleLength, sApplianceType):
     return result
 
 
-def start_appliance(iRestartDelay, iCycleTimeLeft, sApplianceType,
+def start_appliance(iRestartDelay, sApplianceType,
                     iStandbyPower, iRatedPower, iMeanCycleLength):
     """
 
     Parameters
     ----------
     iRestartDelay
-    iCycleTimeLeft
     sApplianceType
     iStandbyPower
     iRatedPower
@@ -582,7 +587,7 @@ def run_application_simulation(occupancy_distribution, app,
                             # This is a start event
                             [iCycleTimeLeft, iPower,
                              iRestartDelayTimeLeft] = start_appliance(
-                                iRestartDelay, iCycleTimeLeft, i,
+                                iRestartDelay, i,
                                 iStandbyPower, iRatedPower, iMeanCycleLength)
 
                     # Custom appliance handler: storage heaters have a simple
@@ -627,7 +632,7 @@ def run_application_simulation(occupancy_distribution, app,
                             # This is a start event
                             [iCycleTimeLeft, iPower,
                              iRestartDelayTimeLeft] = start_appliance(
-                                iRestartDelay, iCycleTimeLeft, i,
+                                iRestartDelay, i,
                                 iStandbyPower, iRatedPower, iMeanCycleLength)
 
 
