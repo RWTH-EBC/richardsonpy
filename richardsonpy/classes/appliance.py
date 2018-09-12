@@ -49,7 +49,7 @@ class Appliances:
     8 - CUSTOM (not further described in original tool)
 
     *** Appliance mean power factor and reactive power behavior from Dissertation Scheffler:
-    Jörg Scheffler - "Bestimmung der maximal zulässigen Netzanschlussleistung photovoltaischer
+    Jï¿½rg Scheffler - "Bestimmung der maximal zulï¿½ssigen Netzanschlussleistung photovoltaischer
                       Energiewandlungsanlagen in Wohnsiedlungsgebieten",
                       Dissertation, TU Chemnitz, 2002.
     """
@@ -541,7 +541,7 @@ def run_application_simulation(occupancy_distribution, app,
             for j in range(24 * 60):  # 24 hours with 60 minutes each
                 no_consumption.append(0)
             result.append(no_consumption)
-			result_q.append(no_consumption)
+            result_q.append(no_consumption)
 			
         else:  # Device is installed in the current building:
 
@@ -708,6 +708,6 @@ def run_application_simulation(occupancy_distribution, app,
                 consumption_q.append(iPower * itanphi)  # append reactive power
 
             result.append(consumption)
-			result_q.append(consumption_q)
+            result_q.append(consumption_q)
 
     return (result, result_q)
