@@ -29,7 +29,7 @@ from setuptools import setup
 
 setup(name='richardsonpy',
       version='0.1',
-      description='Python version of Richardson tool',
+      description='Python version of Richardson tool to generate stochastic user and electric load profiles',
       url='https://github.com/RWTH-EBC/richardsonpy',
       author='RWTH Aachen University, E.ON Energy Research Center, '
              'Institute of Energy Efficient Buildings and Indoor Climate',
@@ -37,7 +37,6 @@ setup(name='richardsonpy',
       packages=['richardsonpy'],
 	  tests_require=['pytest'],
       install_requires=['numpy', 'matplotlib', 'xlrd'],
-	  description='Python version of the Richardson tool to generate stochastic user and electric load profiles',
 	  platforms='any',
 	  classifiers=[
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
