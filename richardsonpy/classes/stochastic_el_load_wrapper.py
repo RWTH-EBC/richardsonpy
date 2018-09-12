@@ -56,6 +56,18 @@ class ElectricityProfile(object):
 
     def _get_month(self, day, leap_year=False):
         """
+
+        Parameters
+        ----------
+        day : int
+            Day number
+        leap_year : bool, optional
+            Boolean to define leap year (default: False). If True, uses
+            leap year
+
+        Returns
+        -------
+
         """
         if leap_year:
             days = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
