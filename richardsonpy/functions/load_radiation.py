@@ -69,6 +69,7 @@ def get_rad_from_try_data(try_data):
 
     return (q_direct, q_diffuse)
 
+
 def get_rad_from_try_path(path_try=None):
     """
     Loads TRY dataset and returns direct and diffuse radiation.
@@ -95,7 +96,6 @@ def get_rad_from_try_path(path_try=None):
 
 
 if __name__ == '__main__':
-
     try_dat = load_try_data()
 
     (q_dir, q_diff) = get_rad_from_try_data(try_data=try_dat)

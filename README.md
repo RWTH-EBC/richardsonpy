@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/RWTH-EBC/richardsonpy.svg?branch=master)](https://travis-ci.org/RWTH-EBC/richardsonpy.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/RWTH-EBC/richardsonpy/badge.svg?branch=master)](https://coveralls.io/github/RWTH-EBC/richardsonpy?branch=master)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 # richardsonpy
 Python version of Richardson tool
 
@@ -11,8 +15,15 @@ Loughborough University, Leicestershire LE11 3TU, UK
 and
 Department of Electronic & Electrical Engineering, University of Strathclyde,
 UK
+Tel. +44 1509 635326. Email address: I.W.Richardson@lboro.ac.uk				
 
-see: https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
+see: 
+
+https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
+
+and
+
+https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786
 
 Python version provided by:
 RWTH Aachen University, E.ON Energy Research Center,
@@ -36,6 +47,66 @@ richardsonpy requires the following Python packages:
 - numpy
 - matplotlib
 - xlrd
+
+##  Example usage
+
+Example code on how to generate a stochastic user profile (profile of active occupancy; 600 seconds resolution)
+
+```Python
+import numpy as np
+
+import richardsonpy.classes.occupancy as occ
+
+#  Total number of occupants within apartment
+number_occupants = 3
+
+#  Generate occupancy object instance
+occupancy_object = occ.Occupancy(number_occupants=number_occupants)
+
+#  Pointer to occupancy profile
+occupancy_profile = occupancy_object.occupancy
+```
+
+Example code on how to generate stochastic electric load profile (60 seconds resolution)
+
+```Python
+import numpy as np
+
+import richardsonpy.classes.occupancy as occ
+import richardsonpy.functions.load_radiation as loadrad
+import richardsonpy.classes.electric_load as eload
+
+
+def example_stoch_el_load(do_plot=False):
+    #  Total number of occupants in apartment
+    nb_occ = 3
+
+    timestep = 60  # in seconds
+
+    #  Generate occupancy object (necessary as input for electric load gen.)
+    occ_obj = occ.Occupancy(number_occupants=nb_occ)
+
+    #  Get radiation (necessary for lighting usage calculation)
+    (q_direct, q_diffuse) = loadrad.get_rad_from_try_path()
+
+    #  Convert 3600 s timestep to given timestep
+    q_direct = cr.change_resolution(q_direct, old_res=3600, new_res=timestep)
+    q_diffuse = cr.change_resolution(q_diffuse, old_res=3600, new_res=timestep)
+
+    #  Generate stochastic electric load object instance
+    el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
+                                     total_nb_occ=nb_occ,
+                                     q_direct=q_direct,
+                                     q_diffuse=q_diffuse,
+                                     timestep=timestep)
+
+    #  Calculate el. energy in kWh by accessing loadcurve attribute
+    energy_el_kwh = sum(el_load_obj.loadcurve) * timestep / (3600 * 1000)
+
+    print('Electric energy demand in kWh: ')
+    print(energy_el_kwh)
+```
+
 
 ##  References
 

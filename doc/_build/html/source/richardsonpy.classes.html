@@ -1,0 +1,651 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="English">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>richardsonpy.classes package &#8212; richardsonpy 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="richardsonpy-classes-package">
+<h1>richardsonpy.classes package<a class="headerlink" href="#richardsonpy-classes-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-richardsonpy.classes.appliance">
+<span id="richardsonpy-classes-appliance-module"></span><h2>richardsonpy.classes.appliance module<a class="headerlink" href="#module-richardsonpy.classes.appliance" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu May 21 21:24:23 2015</p>
+<p>&#64;author: Thomas</p>
+<dl class="class">
+<dt id="richardsonpy.classes.appliance.Appliances">
+<em class="property">class </em><code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">Appliances</code><span class="sig-paren">(</span><em>filename</em>, <em>annual_consumption=3200</em>, <em>mean_active_occupancy=0.459</em>, <em>randomize_appliances=False</em>, <em>max_iter=2</em>, <em>prev_heat_dev=False</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.Appliances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="docutils">
+<dt>Class to hold all relevant variables:</dt>
+<dd>Appliances.data -&gt; data stored in the csv input file
+Appliances.calib_cycles -&gt; calibrated cycles
+(calibration_factor*base_cycles)</dd>
+</dl>
+<p>row     row_float       meaning
+0       not imported    Orientation (Cold, Cooking, Consumer electronics)
+1       not imported    Device (TV, Oven, PC, Microwave)
+2       0               User owns such an appliance (1 for yes, 0 for no)
+3       1               Dwellings with such a device
+4       2               Cycles per year
+5       3               Mean cycle length
+6       4               Mean cycle power
+7       5               Standby power
+8       6               Restart delay
+9       7               Occupancy dependent (1 for yes, 0 for no) - device
+is only active if user is at home
+10      8               Activity use profile (Number code, see below <a href="#id1"><span class="problematic" id="id2">**</span></a><a href="#id3"><span class="problematic" id="id4">*</span></a>)
+11      9               Activity probability
+12      10              Appliance mean power factor</p>
+<p><a href="#id5"><span class="problematic" id="id6">**</span></a>* Codes for the activity profile:
+0 - watching TV
+1 - cooking
+2 - doing laundry
+3 - washing
+4 - ironing
+5 - cleaning the house (vacuuming)
+6 - ACTIVE OCC (not further described in original tool)
+7 - LEVEL (not further described in original tool)
+8 - CUSTOM (not further described in original tool)</p>
+<dl class="method">
+<dt id="richardsonpy.classes.appliance.Appliances.estimate_annual_consumption">
+<code class="descname">estimate_annual_consumption</code><span class="sig-paren">(</span><em>calibration_factor=1</em>, <em>mean_active_occupancy=0.459</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.Appliances.estimate_annual_consumption" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate annual energy consumption</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>calibration_factor</strong> (<em>float</em>) -- </li>
+<li><strong>mean_active_occupancy</strong> (<em>float</em>) -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">sum(energy_total_ownership)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="richardsonpy.classes.appliance.Appliances.load_appliances">
+<code class="descname">load_appliances</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.Appliances.load_appliances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load appliance data file and save results to self.data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) -- Path to appliance input file (Appliances.csv)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="richardsonpy.classes.appliance.Appliances.randomize">
+<code class="descname">randomize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.Appliances.randomize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Randomize installed appliances (0 - Not installed; 1 - installed)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.cycle_length">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">cycle_length</code><span class="sig-paren">(</span><em>iMeanCycleLength</em>, <em>sApplianceType</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.cycle_length" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iMeanCycleLength</strong> -- </li>
+<li><strong>sApplianceType</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.date_add">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">date_add</code><span class="sig-paren">(</span><em>number</em>, <em>date</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.date_add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Problem: Usage of a VBA built-in function called DateAdd.</p>
+<p>According to the VBA manual, this function adds a _number_ of days to
+the given _date_
+The return value is (in the Richardson tool) definded as a &quot;day&quot;-type.
+Therefore, we return an integer.
+Parameter date a list with the following meaning: [day, month, year]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>number</strong> -- </li>
+<li><strong>date</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.date_part">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">date_part</code><span class="sig-paren">(</span><em>day</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.date_part" title="Permalink to this definition">¶</a></dt>
+<dd><p>Problem: Richardson tool uses a VBA built-in function called DatePart.</p>
+<p>According to the VBA manual, this function adds a _number_ of days to the
+given _date_
+The return value is (in the Richardson tool) definded as a &quot;month&quot;-type.
+Therefore, we return an integer.</p>
+<blockquote>
+<div>If the return month represents January, we return 1
+(NOT 0 - as lists usuall begin with)</div></blockquote>
+<p>Parameter day represents the integer value of the corresponding date
+(January first -&gt; 1, December 31st -&gt; 365)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>day</strong> -- </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">result</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.get_length_months">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">get_length_months</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.get_length_months" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get number of days per month no switching year!)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><strong>list_days_per_month</strong> -- List holdings number of days per month (no switching year!)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list (of ints)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.get_power_usage">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">get_power_usage</code><span class="sig-paren">(</span><em>iCycleTimeLeft</em>, <em>sApplianceType</em>, <em>iStandbyPower</em>, <em>iRatedPower</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.get_power_usage" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iCycleTimeLeft</strong> -- </li>
+<li><strong>sApplianceType</strong> -- </li>
+<li><strong>iStandbyPower</strong> -- </li>
+<li><strong>iRatedPower</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.run_application_simulation">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">run_application_simulation</code><span class="sig-paren">(</span><em>occupancy_distribution</em>, <em>app</em>, <em>activity_statistics</em>, <em>iMonth=1</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.run_application_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct portation from original Richardson file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>occupancy_distribution</strong> -- </li>
+<li><strong>app</strong> -- </li>
+<li><strong>activity_statistics</strong> -- </li>
+<li><strong>iMonth</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.appliance.start_appliance">
+<code class="descclassname">richardsonpy.classes.appliance.</code><code class="descname">start_appliance</code><span class="sig-paren">(</span><em>iRestartDelay</em>, <em>iCycleTimeLeft</em>, <em>sApplianceType</em>, <em>iStandbyPower</em>, <em>iRatedPower</em>, <em>iMeanCycleLength</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.appliance.start_appliance" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>iRestartDelay</strong> -- </li>
+<li><strong>iCycleTimeLeft</strong> -- </li>
+<li><strong>sApplianceType</strong> -- </li>
+<li><strong>iStandbyPower</strong> -- </li>
+<li><strong>iRatedPower</strong> -- </li>
+<li><strong>iMeanCycleLength</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[iCycleTimeLeft, iPower, iRestartDelayTimeLeft]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.classes.electric_load">
+<span id="richardsonpy-classes-electric-load-module"></span><h2>richardsonpy.classes.electric_load module<a class="headerlink" href="#module-richardsonpy.classes.electric_load" title="Permalink to this headline">¶</a></h2>
+<p>Script holding ElectricLoad class</p>
+<dl class="class">
+<dt id="richardsonpy.classes.electric_load.ElectricLoad">
+<em class="property">class </em><code class="descclassname">richardsonpy.classes.electric_load.</code><code class="descname">ElectricLoad</code><span class="sig-paren">(</span><em>occ_profile</em>, <em>total_nb_occ</em>, <em>q_direct</em>, <em>q_diffuse</em>, <em>annual_demand=None</em>, <em>is_sfh=True</em>, <em>path_app=None</em>, <em>path_light=None</em>, <em>randomize_appliances=True</em>, <em>prev_heat_dev=False</em>, <em>light_config=0</em>, <em>timestep=60</em>, <em>initial_day=1</em>, <em>season_light_mod=False</em>, <em>light_mod_fac=0.25</em>, <em>do_normalization=False</em>, <em>calc_profile=True</em>, <em>save_app_light=False</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.electric_load.ElectricLoad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Electric load class</p>
+<dl class="method">
+<dt id="richardsonpy.classes.electric_load.ElectricLoad.calc_stoch_el_profile">
+<code class="descname">calc_stoch_el_profile</code><span class="sig-paren">(</span><em>q_direct</em>, <em>q_diffuse</em>, <em>is_sfh=True</em>, <em>path_app=None</em>, <em>path_light=None</em>, <em>randomize_appliances=True</em>, <em>prev_heat_dev=False</em>, <em>light_config=0</em>, <em>timestep=60</em>, <em>initial_day=1</em>, <em>season_light_mod=False</em>, <em>light_mod_fac=0.25</em>, <em>do_normalization=False</em>, <em>save_app_light=False</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.electric_load.ElectricLoad.calc_stoch_el_profile" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Calculate stochastic electrical load profile.</p>
+<dl class="docutils">
+<dt>q_direct <span class="classifier-delimiter">:</span> <span class="classifier">array-like</span></dt>
+<dd>Direct radiation in kW/m2 (has to be handed over with resolution
+of parameter timestep! Otherwise, is going to raise AssertionError)</dd>
+<dt>q_diffuse <span class="classifier-delimiter">:</span> <span class="classifier">array-like</span></dt>
+<dd>Diffuse radiation in kW/m2 (has to be handed over with resolution
+of parameter timestep! Otherwise, is going to raise AssertionError)</dd>
+<dt>is_sfh <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Defines, if building type is of type single family house
+(default: True). If False, assumes multi-family house.</dd>
+<dt>path_app <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Path to appliance input data set (default: None). If None, uses
+...</dd>
+</dl>
+</div></blockquote>
+<p>ichardsonpy
+ichardsonpyinputsAppliances.csv</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>path_light <span class="classifier-delimiter">:</span> <span class="classifier">str, optional</span></dt>
+<dd>Path to lighting input data set (default: None). If None, uses
+...</dd>
+</dl>
+</div></blockquote>
+<p>ichardsonpy
+ichardsonpyinputsLightBulbs.csv</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>randomize_appliances <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Defines, if random set of appliance should be selected
+(default: True). If False, always uses defined appliances in
+...</dd>
+</dl>
+</div></blockquote>
+<p>ichardsonpy
+ichardsonpyinputsAppliances.csv</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>prev_heat_dev <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Enables prevention of electric heating devices and hot water
+devices (default: False). If True, devices for space heating and
+hot water are not allowed to be installed.</dd>
+<dt>light_config <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd>Number of lighting configuration (default: 0)</dd>
+<dt>timestep <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd>Timestep for profile rescaling (default: 60). Profile is
+originally generated with 60 seconds timestep. If another
+timestep is given, profile resolution is changed to given
+timestep.</dd>
+<dt>initial_day <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd>Defines number for initial weekday (default: 1).
+1-5 correspond to Monday-Friday, 6-7 to Saturday and
+Sunday</dd>
+<dt>season_light_mod <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Defines, if sinus-wave should be used to modify electric load
+profile to account for seasonal influence, mainly lighting
+differences in summer and winter month (default: False)</dd>
+<dt>light_mod_fac <span class="classifier-delimiter">:</span> <span class="classifier">float optional</span></dt>
+<dd>Modification factor for season_light_mod == True (default: 0.25)</dd>
+<dt>do_normalization <span class="classifier-delimiter">:</span> <span class="classifier">bool optional</span></dt>
+<dd>Defines, if profile should be normalized to given annual electric
+reference demand value in kWh (default: False)</dd>
+<dt>save_app_light <span class="classifier-delimiter">:</span> <span class="classifier">bool, optional</span></dt>
+<dd>Defines, if separate electric profiles for appliance and lighting
+should be saved (default: False). If False, only saves summed up
+electric load profiles.</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.electric_load.ElectricLoad.standard_consumption">
+<code class="descname">standard_consumption</code><em class="property"> = {'MFH': {1: 1500, 2: 2200, 3: 3000, 4: 3400, 5: 4100}, 'SFH': {1: 2700, 2: 3200, 3: 4000, 4: 4400, 5: 5500}}</em><a class="headerlink" href="#richardsonpy.classes.electric_load.ElectricLoad.standard_consumption" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.electric_load.main">
+<code class="descclassname">richardsonpy.classes.electric_load.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.electric_load.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.classes.lighting">
+<span id="richardsonpy-classes-lighting-module"></span><h2>richardsonpy.classes.lighting module<a class="headerlink" href="#module-richardsonpy.classes.lighting" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu May 21 21:24:29 2015</p>
+<p>&#64;author: Thomas</p>
+<dl class="class">
+<dt id="richardsonpy.classes.lighting.LightingModelConfiguration">
+<em class="property">class </em><code class="descclassname">richardsonpy.classes.lighting.</code><code class="descname">LightingModelConfiguration</code><span class="sig-paren">(</span><em>external_irradiance_threshold=[60, 10], calibration_scalar=0.00815368639667705, effective_occupancy=[0, 1, 1.52814569536424, 1.69370860927152, 1.98344370860927, 2.09437086092715], lighting_event_lower_value=[1, 2, 3, 5, 9, 17, 28, 50, 92], lighting_event_upper_value=[1, 2, 4, 8, 16, 27, 49, 91, 259]</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.lighting.LightingModelConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="richardsonpy.classes.lighting.LightingModelConfiguration.relative_bulb_use_weighting">
+<code class="descname">relative_bulb_use_weighting</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.lighting.LightingModelConfiguration.relative_bulb_use_weighting" title="Permalink to this definition">¶</a></dt>
+<dd><p>This represents the concept that some bulbs are used more
+frequently than others in a house.</p>
+<p>The return value is [-ln(random_variable)]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">-math.log(random.random())</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.lighting.load_lighting_profile">
+<code class="descclassname">richardsonpy.classes.lighting.</code><code class="descname">load_lighting_profile</code><span class="sig-paren">(</span><em>filename</em>, <em>index=0</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.lighting.load_lighting_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load the installed light bulbs
+The tool already provided a sheet with 100 sample bulb configurations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> -- </li>
+<li><strong>index</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">read_in[index]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.classes.lighting.run_lighting_simulation">
+<code class="descclassname">richardsonpy.classes.lighting.</code><code class="descname">run_lighting_simulation</code><span class="sig-paren">(</span><em>vOccupancyArray</em>, <em>vBulbArray</em>, <em>vIrradianceArray</em>, <em>light_mod_config</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.lighting.run_lighting_simulation" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vOccupancyArray</strong> -- </li>
+<li><strong>vBulbArray</strong> -- </li>
+<li><strong>vIrradianceArray</strong> -- </li>
+<li><strong>light_mod_config</strong> -- </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">result</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.classes.occupancy">
+<span id="richardsonpy-classes-occupancy-module"></span><h2>richardsonpy.classes.occupancy module<a class="headerlink" href="#module-richardsonpy.classes.occupancy" title="Permalink to this headline">¶</a></h2>
+<p>Occupancy class. Holds information about number of occupants and their
+occupancy profile.</p>
+<dl class="class">
+<dt id="richardsonpy.classes.occupancy.Occupancy">
+<em class="property">class </em><code class="descclassname">richardsonpy.classes.occupancy.</code><code class="descname">Occupancy</code><span class="sig-paren">(</span><em>number_occupants</em>, <em>initial_day=1</em>, <em>nb_days=365</em>, <em>do_profile=True</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.occupancy.Occupancy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Occupancy class of richardsonpy</p>
+<dl class="method">
+<dt id="richardsonpy.classes.occupancy.Occupancy.gen_occ_profile">
+<code class="descname">gen_occ_profile</code><span class="sig-paren">(</span><em>nb_days</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.occupancy.Occupancy.gen_occ_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate stochastic occupancy profile based on number of occupants
+and weekday.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>nb_days</strong> (<em>int</em><em>, </em><em>optional</em>) -- Number of days, which should be used to generate profile
+(default: 365)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.occupancy.Occupancy.occ_start_states">
+<code class="descname">occ_start_states</code><em class="property"> = {}</em><a class="headerlink" href="#richardsonpy.classes.occupancy.Occupancy.occ_start_states" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.occupancy.Occupancy.occ_start_states_loaded">
+<code class="descname">occ_start_states_loaded</code><em class="property"> = False</em><a class="headerlink" href="#richardsonpy.classes.occupancy.Occupancy.occ_start_states_loaded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.occupancy.Occupancy.tpm">
+<code class="descname">tpm</code><em class="property"> = {}</em><a class="headerlink" href="#richardsonpy.classes.occupancy.Occupancy.tpm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.occupancy.Occupancy.type_weekday">
+<code class="descname">type_weekday</code><em class="property"> = ['wd', 'we']</em><a class="headerlink" href="#richardsonpy.classes.occupancy.Occupancy.type_weekday" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.classes.stochastic_el_load_wrapper">
+<span id="richardsonpy-classes-stochastic-el-load-wrapper-module"></span><h2>richardsonpy.classes.stochastic_el_load_wrapper module<a class="headerlink" href="#module-richardsonpy.classes.stochastic_el_load_wrapper" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue Jul 21 14:09:28 2015</p>
+<p>&#64;author: tsz</p>
+<dl class="class">
+<dt id="richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile">
+<em class="property">class </em><code class="descclassname">richardsonpy.classes.stochastic_el_load_wrapper.</code><code class="descname">ElectricityProfile</code><span class="sig-paren">(</span><em>appliances</em>, <em>lightbulbs</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ElectricityProfile class</p>
+<dl class="attribute">
+<dt id="richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.activity_statistics">
+<code class="descname">activity_statistics</code><em class="property"> = {}</em><a class="headerlink" href="#richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.activity_statistics" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.activity_statistics_loaded">
+<code class="descname">activity_statistics_loaded</code><em class="property"> = False</em><a class="headerlink" href="#richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.activity_statistics_loaded" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.power_sim">
+<code class="descname">power_sim</code><span class="sig-paren">(</span><em>irradiation</em>, <em>weekend</em>, <em>day</em>, <em>occupancy</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.power_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate electric power for lighting and appliance usage.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>irradiation</strong> (<em>Array-like</em>) -- Solar irradiation on a horizontal plane for one day (1 minute res.)</li>
+<li><strong>weekend</strong> (<em>Boolean</em>) -- <ul>
+<li>True: Weekend</li>
+<li>False: Monday - Friday</li>
+</ul>
+</li>
+<li><strong>day</strong> (<em>Integer</em>) -- Day of the (computation) year.</li>
+<li><strong>occupancy</strong> (<em>Array-like</em>) -- Occupancy for one day (10 minute resolution)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p><strong>tup_res</strong> -- Results tuple (power_el_total, power_el_light,
+power_el_app)
+power_el_total : array</p>
+<blockquote>
+<div><p>Array holding total el. power values in Watt</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>power_el_light <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
+<dd><p class="first last">Array holding el. power values for light usage in Watt</p>
+</dd>
+<dt>power_el_app <span class="classifier-delimiter">:</span> <span class="classifier">array</span></dt>
+<dd><p class="first last">Array holding el. power values for appliance usage in Watt</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple (of arrays)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.type_weekday">
+<code class="descname">type_weekday</code><em class="property"> = ['wd', 'we']</em><a class="headerlink" href="#richardsonpy.classes.stochastic_el_load_wrapper.ElectricityProfile.type_weekday" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.classes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-richardsonpy.classes" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">richardsonpy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/source/richardsonpy.classes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

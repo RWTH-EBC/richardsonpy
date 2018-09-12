@@ -1,0 +1,225 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="English">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>richardsonpy &#8212; richardsonpy 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="richardsonpy">
+<h1>richardsonpy<a class="headerlink" href="#richardsonpy" title="Permalink to this headline">¶</a></h1>
+<p>Python version of Richardson tool.
+richardsonpy includes codes to generate stochastic domestic user, appliance, and lighting profiles.</p>
+<div class="toctree-wrapper compound">
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+<p>Original version published under GNU GENERAL PUBLIC LICENSE by
+Ian Richardson,
+Murray Thomson and
+David Infield
+CREST (Centre for Renewable Energy Systems Technology),
+Department of Electronic and Electrical Engineering,
+Loughborough University, Leicestershire LE11 3TU, UK
+and
+Department of Electronic &amp; Electrical Engineering, University of Strathclyde,
+UK
+Tel. +44 1509 635326. Email address: <a class="reference external" href="mailto:I&#46;W&#46;Richardson&#37;&#52;&#48;lboro&#46;ac&#46;uk">I<span>&#46;</span>W<span>&#46;</span>Richardson<span>&#64;</span>lboro<span>&#46;</span>ac<span>&#46;</span>uk</a></p>
+<p>see:</p>
+<p><a class="reference external" href="https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112">https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112</a></p>
+<p>and</p>
+<p><a class="reference external" href="https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786">https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786</a></p>
+<p>Python version provided by:
+Institute for Energy Efficient Buildings and Indoor Climate,
+E.ON Energy Research Center, RWTH Aachen University</p>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>Installation is possible via pip:</p>
+<p>'pip install richardsonpy'</p>
+<p>(for static installation into your current Python distribution)</p>
+<p>or</p>
+<p>clone development version via git and install via pip (egglink):</p>
+<p>'pip install -e &lt;your_path_to_richardsonpy&gt;'</p>
+</div>
+<div class="section" id="dependencies">
+<h1>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>richardsonpy requires the following Python packages:</dt>
+<dd><ul class="first last simple">
+<li>numpy</li>
+<li>matplotlib</li>
+<li>xlrd</li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="example-usage">
+<h1>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h1>
+<p>Example code on how to generate a stochastic user profile (profile of active occupancy; 600 seconds resolution)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">richardsonpy.classes.occupancy</span> <span class="kn">as</span> <span class="nn">occ</span>
+
+<span class="c1">#  Total number of occupants within apartment</span>
+<span class="n">number_occupants</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1">#  Generate occupancy object instance</span>
+<span class="n">occupancy_object</span> <span class="o">=</span> <span class="n">occ</span><span class="o">.</span><span class="n">Occupancy</span><span class="p">(</span><span class="n">number_occupants</span><span class="o">=</span><span class="n">number_occupants</span><span class="p">)</span>
+
+<span class="c1">#  Pointer to occupancy profile</span>
+<span class="n">occupancy_profile</span> <span class="o">=</span> <span class="n">occupancy_object</span><span class="o">.</span><span class="n">occupancy</span>
+</pre></div>
+</div>
+<p>Example code on how to generate stochastic electric load profile (60 seconds resolution)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">richardsonpy.classes.occupancy</span> <span class="kn">as</span> <span class="nn">occ</span>
+<span class="kn">import</span> <span class="nn">richardsonpy.functions.load_radiation</span> <span class="kn">as</span> <span class="nn">loadrad</span>
+<span class="kn">import</span> <span class="nn">richardsonpy.classes.electric_load</span> <span class="kn">as</span> <span class="nn">eload</span>
+
+
+<span class="k">def</span> <span class="nf">example_stoch_el_load</span><span class="p">(</span><span class="n">do_plot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1">#  Total number of occupants in apartment</span>
+        <span class="n">nb_occ</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">timestep</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># in seconds</span>
+
+        <span class="c1">#  Generate occupancy object (necessary as input for electric load gen.)</span>
+        <span class="n">occ_obj</span> <span class="o">=</span> <span class="n">occ</span><span class="o">.</span><span class="n">Occupancy</span><span class="p">(</span><span class="n">number_occupants</span><span class="o">=</span><span class="n">nb_occ</span><span class="p">)</span>
+
+        <span class="c1">#  Get radiation (necessary for lighting usage calculation)</span>
+        <span class="p">(</span><span class="n">q_direct</span><span class="p">,</span> <span class="n">q_diffuse</span><span class="p">)</span> <span class="o">=</span> <span class="n">loadrad</span><span class="o">.</span><span class="n">get_rad_from_try_path</span><span class="p">()</span>
+
+        <span class="c1">#  Convert 3600 s timestep to given timestep</span>
+        <span class="n">q_direct</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">change_resolution</span><span class="p">(</span><span class="n">q_direct</span><span class="p">,</span> <span class="n">old_res</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span> <span class="n">new_res</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
+        <span class="n">q_diffuse</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">change_resolution</span><span class="p">(</span><span class="n">q_diffuse</span><span class="p">,</span> <span class="n">old_res</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span> <span class="n">new_res</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
+
+        <span class="c1">#  Generate stochastic electric load object instance</span>
+        <span class="n">el_load_obj</span> <span class="o">=</span> <span class="n">eload</span><span class="o">.</span><span class="n">ElectricLoad</span><span class="p">(</span><span class="n">occ_profile</span><span class="o">=</span><span class="n">occ_obj</span><span class="o">.</span><span class="n">occupancy</span><span class="p">,</span>
+                                                                         <span class="n">total_nb_occ</span><span class="o">=</span><span class="n">nb_occ</span><span class="p">,</span>
+                                                                         <span class="n">q_direct</span><span class="o">=</span><span class="n">q_direct</span><span class="p">,</span>
+                                                                         <span class="n">q_diffuse</span><span class="o">=</span><span class="n">q_diffuse</span><span class="p">,</span>
+                                                                         <span class="n">timestep</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
+
+        <span class="c1">#  Calculate el. energy in kWh by accessing loadcurve attribute</span>
+        <span class="n">energy_el_kwh</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">el_load_obj</span><span class="o">.</span><span class="n">loadcurve</span><span class="p">)</span> <span class="o">*</span> <span class="n">timestep</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Electric energy demand in kWh: &#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">energy_el_kwh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<p>[1] I. Richardson, M. Thomson, D. Infield,
+A high-resolution domestic building occupancy model for energy demand simulations,
+Energy and Buildings 40 (8) (2008) 1560 1566.</p>
+<p>[2] I. Richardson, M. Thomson, D. Infield, A. Delahunty,
+Domestic lighting: A high-resolution energy demand model,
+Energy and Buildings 41 (7) (2009) 781 789.</p>
+<p>[3] I. Richardson, M. Thomson, D. Infield, C. Clifford,
+Domestic electricity use: A high-resolution energy demand model,
+Energy and Buildings 42 (10) (2010) 1878 1887.</p>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>richardsonpy is released by RWTH Aachen University's Institute for Energy Efficient Buildings and Indoor Climate (EBC)
+under the GNU GENERAL PUBLIC LICENSE</p>
+<p><a class="reference external" href="https://www.gnu.org/licenses/gpl-3.0.en.html">https://www.gnu.org/licenses/gpl-3.0.en.html</a></p>
+</div>
+<div class="section" id="acknowledgements">
+<h1>Acknowledgements<a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h1>
+<p>Grateful acknowledgement is made for financial support by Federal Ministry for Economic Affairs and Energy (BMWi),
+promotional references 03ET1138D.</p>
+<a class="reference internal image-reference" href="_images/foerderlogo_bmwi.jpg"><img alt="_images/foerderlogo_bmwi.jpg" src="_images/foerderlogo_bmwi.jpg" style="width: 194.7px; height: 160.5px;" /></a>
+<p>Moreover, we would like to thank Ian Richardson, Murray Thomson and David
+Infield for providing the basic tool version as open-source tool.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">richardsonpy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
