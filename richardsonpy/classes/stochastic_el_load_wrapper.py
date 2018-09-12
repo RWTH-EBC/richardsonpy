@@ -59,8 +59,11 @@ class ElectricityProfile(object):
 
         Parameters
         ----------
-        day
-        leap_year
+        day : int
+            Day number
+        leap_year : bool, optional
+            Boolean to define leap year (default: False). If True, uses
+            leap year
 
         Returns
         -------

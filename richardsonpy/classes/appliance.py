@@ -219,22 +219,23 @@ class Appliances:
 def get_power_usage(iCycleTimeLeft, sApplianceType, iStandbyPower,
                     iRatedPower):
     """
+    Calculate power use
 
     Parameters
     ----------
-    iCycleTimeLeft :
-
-    sApplianceType :
-
-    iStandbyPower :
-
-    iRatedPower :
-
+    iCycleTimeLeft : int
+	    Cycle time left in minutes
+    sApplianceType : int
+        Appliance number (uses loop variable i to "define" appliance)
+    iStandbyPower : int
+	    Standby power in Watt
+    iRatedPower : int
+	    Mean cycle power in Watt
 
     Returns
     -------
-    result :
-
+    result : int
+        Power in Watt
     """
     # Set the return power to the rated power
     result = iRatedPower
@@ -288,18 +289,19 @@ def get_power_usage(iCycleTimeLeft, sApplianceType, iStandbyPower,
 
 def cycle_length(iMeanCycleLength, sApplianceType):
     """
+    Calculate cycle length
 
     Parameters
     ----------
-    iMeanCycleLength :
-
-    sApplianceType :
-
+    iMeanCycleLength : int
+	    Mean cycle length in minutes
+    sApplianceType : int
+	    Appliance number (uses loop variable i to "define" appliance)
 
     Returns
     -------
-    result :
-
+    result : int
+        Cycle length in minutes
     """
     # Set the value to that provided in the configuration
     result = iMeanCycleLength
@@ -324,15 +326,26 @@ def start_appliance(iRestartDelay, sApplianceType,
 
     Parameters
     ----------
-    iRestartDelay
-    sApplianceType
-    iStandbyPower
-    iRatedPower
-    iMeanCycleLength
+    iRestartDelay : int
+	    Restart delay time in minutes
+    sApplianceType : int
+	    Appliance number (uses loop variable i to "define" appliance)
+    iStandbyPower : int
+	    Standby power in Watt
+    iRatedPower : int
+	    Mean cycle power in Watt
+    iMeanCycleLength : int
+	    Mean cycle length in minutes
 
     Returns
     -------
     [iCycleTimeLeft, iPower, iRestartDelayTimeLeft]
+    iCycleTimeLeft : int
+        Cycle time left in minutes
+    iPower : float
+        Power in Watt
+    iRestartDelayTimeLeft :
+        Left restart delay time in minutes
     """
     # Determine how long this appliance is going to be on for
     iCycleTimeLeft = cycle_length(iMeanCycleLength, sApplianceType)
@@ -352,12 +365,12 @@ def start_appliance(iRestartDelay, sApplianceType,
 
 def get_length_months():
     """
-    Get number of days per month no switching year!)
+    Get number of days per month (no leap year?)
 
     Returns
     -------
     list_days_per_month : list (of ints)
-        List holdings number of days per month (no switching year!)
+        List holdings number of days per month
     """
     # JAN FEB MRZ APR MAI JUN JUL AUG SEP OKT NOV DEZ
     return [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -365,6 +378,8 @@ def get_length_months():
 
 def date_add(number, date):
     """
+    Calculate day-equivalent for current date
+
     Problem: Usage of a VBA built-in function called DateAdd.
 
     According to the VBA manual, this function adds a _number_ of days to
@@ -377,12 +392,13 @@ def date_add(number, date):
     ----------
     number :
 
-    date :
-
+    date : list (of ints)
+        List holding date in format [day, month, year], such as [14, 1, 1997]
 
     Returns
     -------
-    result :
+    result : int
+        Day equivalent
     """
     length_months = get_length_months()
 
@@ -403,6 +419,8 @@ def date_add(number, date):
 
 def date_part(day):
     """
+    Calculate month-equivalent
+
     Problem: Richardson tool uses a VBA built-in function called DatePart.
 
     According to the VBA manual, this function adds a _number_ of days to the
@@ -410,17 +428,19 @@ def date_part(day):
     The return value is (in the Richardson tool) definded as a "month"-type.
     Therefore, we return an integer.
         If the return month represents January, we return 1
-        (NOT 0 - as lists usuall begin with)
+        (NOT 0 - as lists usually begin with)
     Parameter day represents the integer value of the corresponding date
     (January first -> 1, December 31st -> 365)
 
     Parameters
     ----------
-    day
+    day : int
+        Day number
 
     Returns
     -------
-    result
+    result : int
+        Month number
     """
     length_months = get_length_months()
 
@@ -440,14 +460,19 @@ def run_application_simulation(occupancy_distribution, app,
 
     Parameters
     ----------
-    occupancy_distribution
-    app
-    activity_statistics
-    iMonth
+    occupancy_distribution : array-like
+        Occupancy for one day (10 minute resolution)
+    app : list
+        List of appliance configurations
+    activity_statistics :
+        
+    iMonth : int
+        Month integer
 
     Returns
     -------
-    result
+    result : float
+        Power in Watt
     """
 
     # Define the relative monthly temperatures
