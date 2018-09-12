@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/RWTH-EBC/richardsonpy.svg?token=ssfy4ps1Qm5kvs5yAxfm&branch=master)](https://travis-ci.com/RWTH-EBC/richardsonpy.svg?token=ssfy4ps1Qm5kvs5yAxfm&branch=master)
+[![Build Status](https://travis-ci.org/RWTH-EBC/richardsonpy.svg?branch=master)](https://travis-ci.org/RWTH-EBC/richardsonpy.svg?branch=master)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # richardsonpy
