@@ -138,11 +138,13 @@ class Occupancy(object):
 
         Parameters
         ----------
-        start_probabilities
+        start_probabilities : list
+            Start probabilities
 
         Returns
         -------
-        result
+        result : int
+            Start state
         """
         # Pick a random number to determine the start state
         f_rand = random.random()
@@ -171,11 +173,14 @@ class Occupancy(object):
 
         Parameters
         ----------
-        weekend
+        weekend : bool,
+            If True, is weekend; if False, is not weekend
 
         Returns
         -------
-
+        occupancy : array-like
+            Active occupancy transitions for each ten minute period
+            of the day
         """
         # Select appropriate transition probability matrix
         tpm = self.tpm[self.number_occupants, self.type_weekday[weekend]]
