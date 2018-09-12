@@ -465,7 +465,7 @@ def run_application_simulation(occupancy_distribution, app,
     app : list
         List of appliance configurations
     activity_statistics :
-        
+
     iMonth : int
         Month integer
 

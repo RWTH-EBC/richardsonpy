@@ -34,15 +34,29 @@ class LightingModelConfiguration():
 
         Parameters
         ----------
-        external_irradiance_threshold : list
-
-        calibration_scalar : float
-
-        effective_occupancy : list (of floats)
-
-        lighting_event_lower_value : list (of ints)
-
-        lighting_event_upper_value : list (of ints)
+        external_irradiance_threshold : list, optional
+            List holding house external global irradiance threshold values
+            in W/m2 [index 0: mean value; index 1: standard deviation value]
+            (default: [60, 10])
+        calibration_scalar : float, optional
+            Original tool description: This calibration scaler is used to
+            calibrate the model to so that it provides a particular average
+            output over a large number of runs.
+            (default: 0.00815368639667705)
+        effective_occupancy : list (of floats), optional
+            List holding effective occupancy based on number of active o
+            ccupants (default: [0,
+                                1,
+                                1.52814569536424,
+                                1.69370860927152,
+                                1.98344370860927,
+                                2.09437086092715])
+        lighting_event_lower_value : list (of ints), optional
+            Lower number of lighting event duration in minutes
+            (default: [1, 2, 3, 5, 9, 17, 28, 50, 92])
+        lighting_event_upper_value : list (of ints), optional
+            Upper number of lighting event duration in minutes
+            (default: [1, 2, 4, 8, 16, 27, 49, 91, 259])
         """
 
         # House external global irradiance threshold
@@ -83,12 +97,15 @@ def load_lighting_profile(filename, index=0):
 
     Parameters
     ----------
-    filename
-    index
+    filename : str
+        Path to ligthing data
+    index : int, optional
+        Index of desired house configuration
 
     Returns
     -------
-    read_in[index]
+    read_in[index] :
+        Desired house lighting configuration
     """
     read_in = []
 
@@ -98,8 +115,10 @@ def load_lighting_profile(filename, index=0):
             for row in reader:
                 row_float = []
 
-                # Not all houses have the same amount of light bulbs -> to prevent errors, 
-                # since "" is not translatable into a float, we have to filter the values:
+                # Not all houses have the same amount of light bulbs -> to
+                # prevent errors,
+                # since "" is not translatable into a float, we have to filter
+                # the values:
                 i = 0
                 while (i < len(row) and row[i] != ""):
                     row_float.append(float(row[i]))
@@ -111,8 +130,10 @@ def load_lighting_profile(filename, index=0):
             for row in reader:
                 row_float = []
 
-                # Not all houses have the same amount of light bulbs -> to prevent errors, 
-                # since "" is not translatable into a float, we have to filter the values:
+                # Not all houses have the same amount of light bulbs ->
+                # to prevent errors,
+                # since "" is not translatable into a float, we have to
+                # filter the values:
                 i = 0
                 while (i < len(row) and row[i] != ""):
                     row_float.append(float(row[i]))
@@ -128,14 +149,19 @@ def run_lighting_simulation(vOccupancyArray, vBulbArray, vIrradianceArray,
 
     Parameters
     ----------
-    vOccupancyArray
-    vBulbArray
-    vIrradianceArray
-    light_mod_config
+    vOccupancyArray : array-like
+        Occupancy for one day (10 minute resolution)
+    vBulbArray : array-like
+        Bulb data
+    vIrradianceArray : array-like
+        Irradiance data
+    light_mod_config : object
+        LightingModelConfiguration object instance
 
     Returns
     -------
-    result
+    result : float
+        Power in Watt
     """
     # Instantiate LightingModelConfiguration (with standard values)
     #    light_mod_config = LightingModelConfiguration()

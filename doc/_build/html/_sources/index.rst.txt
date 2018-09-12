@@ -7,7 +7,7 @@ richardsonpy
 ============
 
 Python version of Richardson tool.
-richardsonpy includes codes to generate domestic user, appliance, and lighting profiles. 
+richardsonpy includes codes to generate stochastic domestic user, appliance, and lighting profiles. 
 
 .. toctree::
    :maxdepth: 2
@@ -32,6 +32,7 @@ Loughborough University, Leicestershire LE11 3TU, UK
 and
 Department of Electronic & Electrical Engineering, University of Strathclyde,
 UK
+Tel. +44 1509 635326. Email address: I.W.Richardson@lboro.ac.uk	
 
 see: 
 
