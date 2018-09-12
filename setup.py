@@ -19,20 +19,38 @@ see: https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
 Python version provided by:
 Thomas Schütz and
 Jan Schiefelbein
-RWTH Aachen University, E.ON Energy Research Center,
-Institute for Energy Efficient Buildings and Indoor Climate
+Institute for Energy Efficient Buildings and Indoor Climate,
+E.ON Energy Research Center,
+RWTH Aachen University
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
+import io
+import codecs
+import os
+import sys
+
+
+def read(*filenames, **kwargs):
+    encoding = kwargs.get('encoding', 'utf-8')
+    sep = kwargs.get('sep', '\n')
+    buf = []
+    for filename in filenames:
+        with io.open(filename, encoding=encoding) as f:
+            buf.append(f.read())
+    return sep.join(buf)
+
+long_description = read('README.md')
 
 
 setup(name='richardsonpy',
       version='0.1',
       description='Python version of Richardson tool to generate stochastic user and electric load profiles',
+	  long_description=long_description,
       url='https://github.com/RWTH-EBC/richardsonpy',
-      author='RWTH Aachen University, E.ON Energy Research Center, '
-             'Institute of Energy Efficient Buildings and Indoor Climate',
+      author='Institute of Energy Efficient Buildings and Indoor Climate, '
+             'E.ON Energy Research Center, RWTH Aachen University',
       license='GPL-3.0',
       packages=['richardsonpy'],
 	  tests_require=['pytest'],

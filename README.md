@@ -26,8 +26,10 @@ and
 https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786
 
 Python version provided by:
-RWTH Aachen University, E.ON Energy Research Center,
-Institute for Energy Efficient Buildings and Indoor Climate
+Institute for Energy Efficient Buildings and Indoor Climate,
+E.ON Energy Research Center,
+RWTH Aachen University
+
 
 ## Installation
 
