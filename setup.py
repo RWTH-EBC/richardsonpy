@@ -45,7 +45,7 @@ long_description = read('README.md')
 
 
 setup(name='richardsonpy',
-      version='0.1',
+      version='0.1a',
       description='Python version of Richardson tool to generate stochastic user and electric load profiles',
 	  long_description=long_description,
       url='https://github.com/RWTH-EBC/richardsonpy',
