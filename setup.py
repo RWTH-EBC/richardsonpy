@@ -35,4 +35,16 @@ setup(name='richardsonpy',
              'Institute of Energy Efficient Buildings and Indoor Climate',
       license='GPL-3.0',
       packages=['richardsonpy'],
-      install_requires=['numpy', 'matplotlib', 'xlrd'])
+	  tests_require=['pytest'],
+      install_requires=['numpy', 'matplotlib', 'xlrd'],
+	  description='Python version of the Richardson tool to generate stochastic user and electric load profiles',
+	  platforms='any',
+	  classifiers=[
+          'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.5',
+          'Programming Language :: Python :: 3.6',
+		  'Natural Language :: English',
+          'Intended Audience :: Science/Research',
+          'Topic :: Scientific/Engineering',
+          'Topic :: Utilities'])
