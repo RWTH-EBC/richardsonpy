@@ -83,6 +83,62 @@ E.ON Energy Research Center, RWTH Aachen University</p>
 </dd>
 </dl>
 </div>
+<div class="section" id="example-usage">
+<h1>Example usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h1>
+<p>Example code on how to generate a stochastic user profile (profile of active occupancy; 600 seconds resolution)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">richardsonpy.classes.occupancy</span> <span class="kn">as</span> <span class="nn">occ</span>
+
+<span class="c1">#  Total number of occupants within apartment</span>
+<span class="n">number_occupants</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="c1">#  Generate occupancy object instance</span>
+<span class="n">occupancy_object</span> <span class="o">=</span> <span class="n">occ</span><span class="o">.</span><span class="n">Occupancy</span><span class="p">(</span><span class="n">number_occupants</span><span class="o">=</span><span class="n">number_occupants</span><span class="p">)</span>
+
+<span class="c1">#  Pointer to occupancy profile</span>
+<span class="n">occupancy_profile</span> <span class="o">=</span> <span class="n">occupancy_object</span><span class="o">.</span><span class="n">occupancy</span>
+</pre></div>
+</div>
+<p>Example code on how to generate stochastic electric load profile (60 seconds resolution)</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">richardsonpy.classes.occupancy</span> <span class="kn">as</span> <span class="nn">occ</span>
+<span class="kn">import</span> <span class="nn">richardsonpy.functions.load_radiation</span> <span class="kn">as</span> <span class="nn">loadrad</span>
+<span class="kn">import</span> <span class="nn">richardsonpy.classes.electric_load</span> <span class="kn">as</span> <span class="nn">eload</span>
+
+
+<span class="k">def</span> <span class="nf">example_stoch_el_load</span><span class="p">(</span><span class="n">do_plot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="c1">#  Total number of occupants in apartment</span>
+        <span class="n">nb_occ</span> <span class="o">=</span> <span class="mi">3</span>
+
+        <span class="n">timestep</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># in seconds</span>
+
+        <span class="c1">#  Generate occupancy object (necessary as input for electric load gen.)</span>
+        <span class="n">occ_obj</span> <span class="o">=</span> <span class="n">occ</span><span class="o">.</span><span class="n">Occupancy</span><span class="p">(</span><span class="n">number_occupants</span><span class="o">=</span><span class="n">nb_occ</span><span class="p">)</span>
+
+        <span class="c1">#  Get radiation (necessary for lighting usage calculation)</span>
+        <span class="p">(</span><span class="n">q_direct</span><span class="p">,</span> <span class="n">q_diffuse</span><span class="p">)</span> <span class="o">=</span> <span class="n">loadrad</span><span class="o">.</span><span class="n">get_rad_from_try_path</span><span class="p">()</span>
+
+        <span class="c1">#  Convert 3600 s timestep to given timestep</span>
+        <span class="n">q_direct</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">change_resolution</span><span class="p">(</span><span class="n">q_direct</span><span class="p">,</span> <span class="n">old_res</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span> <span class="n">new_res</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
+        <span class="n">q_diffuse</span> <span class="o">=</span> <span class="n">cr</span><span class="o">.</span><span class="n">change_resolution</span><span class="p">(</span><span class="n">q_diffuse</span><span class="p">,</span> <span class="n">old_res</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span> <span class="n">new_res</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
+
+        <span class="c1">#  Generate stochastic electric load object instance</span>
+        <span class="n">el_load_obj</span> <span class="o">=</span> <span class="n">eload</span><span class="o">.</span><span class="n">ElectricLoad</span><span class="p">(</span><span class="n">occ_profile</span><span class="o">=</span><span class="n">occ_obj</span><span class="o">.</span><span class="n">occupancy</span><span class="p">,</span>
+                                                                         <span class="n">total_nb_occ</span><span class="o">=</span><span class="n">nb_occ</span><span class="p">,</span>
+                                                                         <span class="n">q_direct</span><span class="o">=</span><span class="n">q_direct</span><span class="p">,</span>
+                                                                         <span class="n">q_diffuse</span><span class="o">=</span><span class="n">q_diffuse</span><span class="p">,</span>
+                                                                         <span class="n">timestep</span><span class="o">=</span><span class="n">timestep</span><span class="p">)</span>
+
+        <span class="c1">#  Calculate el. energy in kWh by accessing loadcurve attribute</span>
+        <span class="n">energy_el_kwh</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">el_load_obj</span><span class="o">.</span><span class="n">loadcurve</span><span class="p">)</span> <span class="o">*</span> <span class="n">timestep</span> <span class="o">/</span> <span class="p">(</span><span class="mi">3600</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Electric energy demand in kWh: &#39;</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">energy_el_kwh</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="references">
 <h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
 <p>[1] I. Richardson, M. Thomson, D. Infield,
