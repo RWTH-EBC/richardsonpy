@@ -1,0 +1,30 @@
+richardsonpy.examples package
+=============================
+
+Submodules
+----------
+
+richardsonpy.examples.example\_el\_load module
+----------------------------------------------
+
+.. automodule:: richardsonpy.examples.example_el_load
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+richardsonpy.examples.example\_occupancy module
+-----------------------------------------------
+
+.. automodule:: richardsonpy.examples.example_occupancy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: richardsonpy.examples
+    :members:
+    :undoc-members:
+    :show-inheritance:
