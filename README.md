@@ -79,7 +79,7 @@ import richardsonpy.functions.load_radiation as loadrad
 import richardsonpy.classes.electric_load as eload
 
 
-def example_stoch_el_load(do_plot=False):
+def example_stoch_el_load():
     #  Total number of occupants in apartment
     nb_occ = 3
 
@@ -107,6 +107,9 @@ def example_stoch_el_load(do_plot=False):
 
     print('Electric energy demand in kWh: ')
     print(energy_el_kwh)
+
+if __name__ == '__main__':
+    example_stoch_el_load()
 ```
 
 
