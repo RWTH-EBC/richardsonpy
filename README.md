@@ -72,9 +72,8 @@ occupancy_profile = occupancy_object.occupancy
 Example code on how to generate stochastic electric load profile (60 seconds resolution)
 
 ```Python
-import numpy as np
-
 import richardsonpy.classes.occupancy as occ
+import richardsonpy.functions.change_resolution as cr
 import richardsonpy.functions.load_radiation as loadrad
 import richardsonpy.classes.electric_load as eload
 
@@ -112,6 +111,25 @@ if __name__ == '__main__':
     example_stoch_el_load()
 ```
 
+##  Basic input data sets
+
+The appliance data, light bulb configurations, transition probability matrices,
+activity statistics, and weather data can be found in
+...\richardsonpy\inputs\...
+
+In case you want to use own customized data sets,
+for instance for appliances: 
+Copy and modify Appliances.csv 
+and provide the new path for the ElectricLoad object,
+e.g.:
+```Python
+#  Generate stochastic electric load object instance
+    el_load_obj = eload.ElectricLoad(occ_profile=occ_obj.occupancy,
+                                     total_nb_occ=nb_occ,
+                                     q_direct=q_direct,
+                                     q_diffuse=q_diffuse,
+                                     path_app=your_path_to_app_csv)
+```
 
 ##  References
 
