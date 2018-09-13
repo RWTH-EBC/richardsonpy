@@ -144,10 +144,10 @@ class ElectricLoad(object):
         light_config : int, optional
             Number of lighting configuration (default: 0)
         timestep : int, optional
-	        Timestep for profile rescaling (default: 60). Profile is
-	        originally generated with 60 seconds timestep. If another
-	        timestep is given, profile resolution is changed to given
-	        timestep.
+            Timestep for profile rescaling (default: 60). Profile is
+            originally generated with 60 seconds timestep. If another
+            timestep is given, profile resolution is changed to given
+            timestep.
         initial_day : int, optional
             Defines number for initial weekday (default: 1).
             1-5 correspond to Monday-Friday, 6-7 to Saturday and
