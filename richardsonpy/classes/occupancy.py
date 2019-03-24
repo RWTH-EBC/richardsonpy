@@ -9,6 +9,7 @@ from __future__ import division
 import os
 import numpy as np
 import random
+import warnings
 
 import richardsonpy.functions.occupancy_model as occupancy_model
 
@@ -57,8 +58,15 @@ class Occupancy(object):
 
         assert initial_day in [1, 2, 3, 4, 5, 6, 7]
 
+        if not isinstance(number_occupants, int):
+            msg = 'Number of occupants is not of instance integer: ' \
+                  '' + str(number_occupants) + '. Values is converted into integer value: ' \
+                                               '' + str(int(number_occupants))
+
+            warnings.warn(msg)
+
         self._kind = 'occupancy'
-        self.number_occupants = number_occupants
+        self.number_occupants = int(number_occupants)
         self.occupancy = None  # Occupancy profile
         self.initial_occupancy = None  # Occupancy start states
         self.initial_day = initial_day
