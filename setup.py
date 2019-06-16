@@ -24,58 +24,41 @@ E.ON Energy Research Center,
 RWTH Aachen University
 """
 
-from setuptools import setup, find_packages
-
-import io
-import codecs
-import os
-import sys
-
-
-def read(*filenames, **kwargs):
-    encoding = kwargs.get('encoding', 'utf-8')
-    sep = kwargs.get('sep', '\n')
-    buf = []
-    for filename in filenames:
-        with io.open(filename, encoding=encoding) as f:
-            buf.append(f.read())
-    return sep.join(buf)
-
-long_description = '''Python version of Richardson tool. 
-
-The Richardson tool is able to generate stochastic occupancy and electric load profiles for residential 
-apartments.
-
-Original version published under GNU GENERAL PUBLIC LICENSE by
-Ian Richardson,
-Murray Thomson and
-David Infield
-CREST (Centre for Renewable Energy Systems Technology),
-Department of Electronic and Electrical Engineering,
-Loughborough University, Leicestershire LE11 3TU, UK
-and
-Department of Electronic & Electrical Engineering, University of Strathclyde,
-UK
-Tel. +44 1509 635326. Email address: I.W.Richardson@lboro.ac.uk				
-
-see: 
-
-https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
-
-and
-
-https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786
-
-Python version provided by:
-Institute for Energy Efficient Buildings and Indoor Climate,
-E.ON Energy Research Center,
-RWTH Aachen University'''
+from setuptools import setup
 
 
 setup(name='richardsonpy',
       version='0.2',
       description='Python version of Richardson tool to generate stochastic user and electric load profiles',
-	  long_description=long_description,
+      long_description='''Python version of Richardson tool. 
+
+	  The Richardson tool is able to generate stochastic occupancy and electric load profiles for residential 
+	  apartments.
+
+	  Original version published under GNU GENERAL PUBLIC LICENSE by
+	  Ian Richardson,
+	  Murray Thomson and
+	  David Infield
+	  CREST (Centre for Renewable Energy Systems Technology),
+	  Department of Electronic and Electrical Engineering,
+	  Loughborough University, Leicestershire LE11 3TU, UK
+	  and
+	  Department of Electronic & Electrical Engineering, University of Strathclyde,
+	  UK
+	  Tel. +44 1509 635326. Email address: I.W.Richardson@lboro.ac.uk				
+
+	  see: 
+
+	  https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/3112
+
+	  and
+
+	  https://dspace.lboro.ac.uk/dspace-jspui/handle/2134/5786
+
+	  Python version provided by:
+	  Institute for Energy Efficient Buildings and Indoor Climate,
+	  E.ON Energy Research Center,
+	  RWTH Aachen University''',
       url='https://github.com/RWTH-EBC/richardsonpy',
       author='Institute of Energy Efficient Buildings and Indoor Climate, '
              'E.ON Energy Research Center, RWTH Aachen University',
