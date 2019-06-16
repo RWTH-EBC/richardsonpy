@@ -21,7 +21,7 @@ install:
   - pip install flake8
 
 script:
-  - py.test
+  - py.test --cov=richardsonpy
 
 after_success:
   - coveralls
