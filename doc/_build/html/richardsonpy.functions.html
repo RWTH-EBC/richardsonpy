@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="English">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>richardsonpy.functions package &#8212; richardsonpy 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="richardsonpy-functions-package">
+<h1>richardsonpy.functions package<a class="headerlink" href="#richardsonpy-functions-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-richardsonpy.functions.change_resolution">
+<span id="richardsonpy-functions-change-resolution-module"></span><h2>richardsonpy.functions.change_resolution module<a class="headerlink" href="#module-richardsonpy.functions.change_resolution" title="Permalink to this headline">¶</a></h2>
+<p>Script to change resolution of timeseries values with constant
+sampling rate.</p>
+<dl class="function">
+<dt id="richardsonpy.functions.change_resolution.change_resolution">
+<code class="descclassname">richardsonpy.functions.change_resolution.</code><code class="descname">change_resolution</code><span class="sig-paren">(</span><em>values</em>, <em>old_res</em>, <em>new_res</em>, <em>method='mean'</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.functions.change_resolution.change_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the temporal resolution of values that have a constant sampling rate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>values</strong> (<em>array-like</em>) -- data points</li>
+<li><strong>old_res</strong> (<em>integer</em>) -- temporal resolution of the given values. old_res=3600 means
+hourly sampled data</li>
+<li><strong>new_res</strong> (<em>integer</em>) -- temporal resolution of the given data shall be converted to</li>
+<li><strong>method</strong> (<code class="docutils literal notranslate"><span class="pre">{&quot;mean&quot;;</span> <span class="pre">&quot;sum&quot;}</span></code>, optional) -- <ul>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code> : compute mean values while resampling (e.g. for power).</li>
+<li><code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code>  : compute sum values while resampling (e.g. for energy).</li>
+</ul>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.functions.load_radiation">
+<span id="richardsonpy-functions-load-radiation-module"></span><h2>richardsonpy.functions.load_radiation module<a class="headerlink" href="#module-richardsonpy.functions.load_radiation" title="Permalink to this headline">¶</a></h2>
+<p>Script to load radiation of TRY weather files</p>
+<dl class="function">
+<dt id="richardsonpy.functions.load_radiation.get_rad_from_try_data">
+<code class="descclassname">richardsonpy.functions.load_radiation.</code><code class="descname">get_rad_from_try_data</code><span class="sig-paren">(</span><em>try_data</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.functions.load_radiation.get_rad_from_try_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns direct and diffuse radiation of TRY datasets</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>try_data</strong> (<em>numpy array</em>) -- Numpy array with TRY data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>tuple_rad</strong> -- Tuple holding direct and diffuse radiation arrays
+(q_direct, q_diffuse) in W/m^2</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple (of arrays)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.functions.load_radiation.get_rad_from_try_path">
+<code class="descclassname">richardsonpy.functions.load_radiation.</code><code class="descname">get_rad_from_try_path</code><span class="sig-paren">(</span><em>path_try=None</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.functions.load_radiation.get_rad_from_try_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads TRY dataset and returns direct and diffuse radiation.
+Default files are returned with 3600 seconds resolution</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_try</strong> (<em>str</em><em>, </em><em>optional</em>) -- Defines path to TRY file (default: None). If set to None, uses
+default TRY dataset (TRY 2010, region 5)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>tuple_rad</strong> -- Tuple holding direct and diffuse radiation arrays
+(q_direct, q_diffuse) in W/m^2</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple (of arrays)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="richardsonpy.functions.load_radiation.load_try_data">
+<code class="descclassname">richardsonpy.functions.load_radiation.</code><code class="descname">load_try_data</code><span class="sig-paren">(</span><em>path_try=None</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.functions.load_radiation.load_try_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns TRY dataset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path_try</strong> (<em>str</em><em>, </em><em>optional</em>) -- Defines path to TRY file (default: None). If set to None, uses
+default TRY dataset (TRY 2010, region 5)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>try_data</strong> -- Numpy array with TRY data</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.functions.occupancy_model">
+<span id="richardsonpy-functions-occupancy-model-module"></span><h2>richardsonpy.functions.occupancy_model module<a class="headerlink" href="#module-richardsonpy.functions.occupancy_model" title="Permalink to this headline">¶</a></h2>
+<p>Created on Fri Aug 21 16:50:36 2015</p>
+<p>&#64;author: tsz</p>
+<dl class="function">
+<dt id="richardsonpy.functions.occupancy_model.all_states">
+<code class="descclassname">richardsonpy.functions.occupancy_model.</code><code class="descname">all_states</code><span class="sig-paren">(</span><em>tpm</em>, <em>initial_state</em><span class="sig-paren">)</span><a class="headerlink" href="#richardsonpy.functions.occupancy_model.all_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the active occupancy transitions for each ten minute period
+of the day</p>
+<p>This is a direct portation of Step 3 in the Excel-Tool
+(module Occupancy_Model)</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-richardsonpy.functions">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-richardsonpy.functions" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">richardsonpy</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/richardsonpy.functions.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,54 @@
+richardsonpy.classes package
+============================
+
+Submodules
+----------
+
+richardsonpy.classes.appliance module
+-------------------------------------
+
+.. automodule:: richardsonpy.classes.appliance
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+richardsonpy.classes.electric\_load module
+------------------------------------------
+
+.. automodule:: richardsonpy.classes.electric_load
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+richardsonpy.classes.lighting module
+------------------------------------
+
+.. automodule:: richardsonpy.classes.lighting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+richardsonpy.classes.occupancy module
+-------------------------------------
+
+.. automodule:: richardsonpy.classes.occupancy
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+richardsonpy.classes.stochastic\_el\_load\_wrapper module
+---------------------------------------------------------
+
+.. automodule:: richardsonpy.classes.stochastic_el_load_wrapper
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: richardsonpy.classes
+    :members:
+    :undoc-members:
+    :show-inheritance:
