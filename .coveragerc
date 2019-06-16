@@ -23,6 +23,3 @@ exclude_lines =
 	if do_plot:
 
 ignore_errors = True
-
-[html]
-directory = coverage_html_report
