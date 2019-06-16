@@ -3,7 +3,10 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 # richardsonpy
-Python version of Richardson tool
+Python version of Richardson tool. 
+
+The Richardson tool is able to generate stochastic occupancy and electric load profiles for residential 
+apartments.
 
 Original version published under GNU GENERAL PUBLIC LICENSE by
 Ian Richardson,
