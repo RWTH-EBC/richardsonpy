@@ -15,7 +15,7 @@ install:
   - pip install --upgrade pip setuptools wheel
   - pip install --only-binary=numpy,scipy numpy scipy
   - pip install xlrd
-  - pip install -e .
+  - pip install .
   - pip install pytest-cov
   - pip install coveralls
   - pip install flake8
