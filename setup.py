@@ -26,7 +26,7 @@ E.ON Energy Research Center,
 RWTH Aachen University
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='richardsonpy',
       version='0.2',
@@ -35,8 +35,9 @@ setup(name='richardsonpy',
       author='Institute of Energy Efficient Buildings and Indoor Climate, '
              'E.ON Energy Research Center, RWTH Aachen University',
       license='GPL-3.0',
-      packages=['richardsonpy'],
+      packages=find_packages(exclude=["test"]),
 	  tests_require=['pytest'],
+          package_data = {'': ['inputs/*', 'inputs/**/*']},
       install_requires=['numpy', 'matplotlib', 'xlrd'],
 	  platforms='any',
 	  classifiers=[
