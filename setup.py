@@ -29,7 +29,7 @@ RWTH Aachen University
 from setuptools import setup, find_packages
 
 setup(name='richardsonpy',
-      version='0.2',
+      version='0.2.1',
       description='Python version of Richardson tool to generate stochastic user and electric load profiles',
       url='https://github.com/RWTH-EBC/richardsonpy',
       author='Institute of Energy Efficient Buildings and Indoor Climate, '
