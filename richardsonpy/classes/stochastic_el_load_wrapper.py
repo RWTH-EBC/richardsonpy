@@ -35,9 +35,50 @@ class ElectricityProfile(object):
         ligthbulbs : list
             List of lightbulb configurations
         """
-        src_path = os.path.dirname(os.path.dirname(__file__))
-        folder = os.path.join(src_path, 'inputs', 'constants')
+
+        self._load_activity_statistics()
+
+        # Create lighting configuration
+        self.lighting_config = lighting_model.LightingModelConfiguration()
+
+        # Save inputs
+        self.appliances = appliances
+        self.lightbulbs = lightbulbs
+
+    def _load_activity_statistics(self):
+
+        """
+        Load activity statistics for appliance usage patterns from CSV files.
+
+        This method loads transition probability matrices for appliance activity
+        statistics from CSV files located in the inputs/constants directory.
+        The statistics are loaded once per class and cached as class variables
+        to avoid repeated file I/O operations.
+
+        The method loads separate statistics for:
+        - Weekdays ('wd'): Monday to Friday activity patterns
+        - Weekends ('we'): Saturday and Sunday activity patterns
+
+        Files loaded:
+        - ActiveAppliances_wd.csv: Weekday appliance activity statistics
+        - ActiveAppliances_we.csv: Weekend appliance activity statistics
+
+        Notes
+        -----
+        - Uses class-level caching to ensure files are only loaded once
+        - Files are expected to be semicolon-delimited CSV format
+        - Data is stored in ElectricityProfile.activity_statistics dictionary
+        - Sets ElectricityProfile.activity_statistics_loaded to True after loading
+
+        Returns
+        -------
+        None
+            Method modifies class variables in-place
+        """
+
         if not ElectricityProfile.activity_statistics_loaded:
+            src_path = os.path.dirname(os.path.dirname(__file__))
+            folder = os.path.join(src_path, 'inputs', 'constants')
             # Load activity statistics
             ElectricityProfile.activity_statistics_loaded = True
 
@@ -47,12 +88,6 @@ class ElectricityProfile(object):
                 temp = (np.loadtxt(file_path, delimiter=";")).tolist()
                 ElectricityProfile.activity_statistics[weekday] = temp
 
-        # Create lighting configuration
-        self.lighting_config = lighting_model.LightingModelConfiguration()
-
-        # Save inputs
-        self.appliances = appliances
-        self.lightbulbs = lightbulbs
 
     def _get_month(self, day, leap_year=False):
         """
@@ -109,6 +144,9 @@ class ElectricityProfile(object):
             power_el_app : array
                 Array holding el. power values for appliance usage in Watt
         """
+
+        self._load_activity_statistics()
+
         month = self._get_month(day)
 
         # Lighting
