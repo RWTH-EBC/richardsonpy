@@ -11,4 +11,5 @@ jobs:
       PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
     with:
+      PYTHON_VERSION: '3.10'
       PYPI_RELEASE: true
