@@ -13,4 +13,3 @@ jobs:
     with:
       PYTHON_VERSION: '3.10'
       PYPI_RELEASE: true
-      BUILD_PACKAGE: true
