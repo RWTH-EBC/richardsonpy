@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  push:
+
+
+jobs:
+  ci:
+    uses: RWTH-EBC/ci_templates/.github/workflows/ci_pipeline.yml@main
+    secrets:
+      PYPI_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+
+    with:
+      PYPI_RELEASE: true
