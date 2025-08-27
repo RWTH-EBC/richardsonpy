@@ -27,25 +27,33 @@ RWTH Aachen University
 """
 
 from setuptools import setup, find_packages
+import os
+
+repo = os.path.abspath(os.path.dirname(__file__))
+version_file = os.path.join(repo, 'richardsonpy', '_version.py')
+
+version_dict = {}
+with open(version_file) as f:
+    exec(f.read(), version_dict)
 
 setup(name='richardsonpy',
-      version='0.2.1',
+      version=version_dict['__version__'],
       description='Python version of Richardson tool to generate stochastic user and electric load profiles',
       url='https://github.com/RWTH-EBC/richardsonpy',
       author='Institute of Energy Efficient Buildings and Indoor Climate, '
              'E.ON Energy Research Center, RWTH Aachen University',
       license='GPL-3.0',
       packages=find_packages(exclude=["test"]),
-	  tests_require=['pytest'],
-          package_data = {'': ['inputs/*', 'inputs/**/*']},
+      tests_require=['pytest'],
+      package_data = {'': ['inputs/*', 'inputs/**/*']},
       install_requires=['numpy', 'matplotlib', 'xlrd'],
-	  platforms='any',
-	  classifiers=[
+      platforms='any',
+      classifiers=[
           'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
-		  'Natural Language :: English',
+          'Natural Language :: English',
           'Intended Audience :: Science/Research',
           'Topic :: Scientific/Engineering',
           'Topic :: Utilities'])
