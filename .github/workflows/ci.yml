@@ -13,3 +13,4 @@ jobs:
     with:
       PYTHON_VERSION: '3.10'
       PYPI_RELEASE: true
+      PYTHON_PACKAGE_NAME: 'richardsonpy'
