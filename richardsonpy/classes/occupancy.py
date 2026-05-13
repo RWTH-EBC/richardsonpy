@@ -104,7 +104,8 @@ class Occupancy(object):
                 temp = (np.loadtxt(file_path, delimiter=";")).tolist()
                 Occupancy.occ_start_states[weekday] = temp
 
-        if not (self.number_occupants, "wd") in list(Occupancy.tpm.keys()):
+        current_keys = list(Occupancy.tpm.keys())
+        if (self.number_occupants, "wd") not in current_keys or (self.number_occupants, "we") not in current_keys:
             # Load transition probability matrixes
             for weekday in self.type_weekday:
                 fname = str(
